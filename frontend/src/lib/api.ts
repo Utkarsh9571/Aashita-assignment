@@ -1,0 +1,125 @@
+import {
+  Room,
+  Booking,
+  BookingCreatePayload,
+  NextAvailableResponse,
+  ApiConflictDetail,
+} from '@/types';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+
+export class ApiError extends Error {
+  status: number;
+  conflictingBooking?: Booking;
+
+  constructor(status: number, message: string, conflictingBooking?: Booking) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.conflictingBooking = conflictingBooking;
+  }
+}
+
+async function handleResponse<T>(res: Response): Promise<T> {
+  if (res.ok) {
+    return (await res.json()) as T;
+  }
+
+  let errorMessage = `Request failed with status ${res.status}`;
+  let conflictingBooking: Booking | undefined;
+
+  try {
+    const errorBody = await res.json();
+    if (errorBody && errorBody.detail) {
+      if (typeof errorBody.detail === 'string') {
+        errorMessage = errorBody.detail;
+      } else if (typeof errorBody.detail === 'object') {
+        const detail = errorBody.detail as ApiConflictDetail;
+        if (detail.message) {
+          errorMessage = detail.message;
+        }
+        if (detail.conflicting_booking) {
+          conflictingBooking = detail.conflicting_booking;
+        }
+      }
+    } else if (errorBody && errorBody.message) {
+      errorMessage = errorBody.message;
+    }
+
+    if (errorBody && errorBody.conflicting_booking) {
+      conflictingBooking = errorBody.conflicting_booking;
+    }
+  } catch {
+    // If response was not JSON, retain status message
+  }
+
+  throw new ApiError(res.status, errorMessage, conflictingBooking);
+}
+
+export async function fetchRooms(): Promise<Room[]> {
+  const res = await fetch(`${API_BASE_URL}/api/rooms`, {
+    headers: { 'Content-Type': 'application/json' },
+    cache: 'no-store',
+  });
+  return handleResponse<Room[]>(res);
+}
+
+export async function fetchBookings(params: {
+  booking_date?: string;
+  room_id?: number;
+}): Promise<Booking[]> {
+  const query = new URLSearchParams();
+  if (params.booking_date) {
+    query.set('booking_date', params.booking_date);
+  }
+  if (params.room_id !== undefined && params.room_id !== null) {
+    query.set('room_id', String(params.room_id));
+  }
+
+  const res = await fetch(`${API_BASE_URL}/api/bookings?${query.toString()}`, {
+    headers: { 'Content-Type': 'application/json' },
+    cache: 'no-store',
+  });
+  return handleResponse<Booking[]>(res);
+}
+
+export async function createBooking(
+  payload: BookingCreatePayload
+): Promise<Booking> {
+  const res = await fetch(`${API_BASE_URL}/api/bookings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse<Booking>(res);
+}
+
+export async function cancelBooking(
+  bookingId: number
+): Promise<{ message: string; booking_id: number }> {
+  const res = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+  });
+  return handleResponse<{ message: string; booking_id: number }>(res);
+}
+
+export async function fetchNextAvailableSlot(
+  roomId: number,
+  date: string,
+  durationMinutes: number
+): Promise<NextAvailableResponse> {
+  const query = new URLSearchParams({
+    date,
+    duration: String(durationMinutes),
+  });
+
+  const res = await fetch(
+    `${API_BASE_URL}/api/rooms/${roomId}/next-available?${query.toString()}`,
+    {
+      headers: { 'Content-Type': 'application/json' },
+      cache: 'no-store',
+    }
+  );
+  return handleResponse<NextAvailableResponse>(res);
+}
