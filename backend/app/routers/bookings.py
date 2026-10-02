@@ -10,7 +10,7 @@ from app.schemas.booking import (
     BookingResponse,
     ConflictingBookingInfo,
 )
-from app.services import booking_service
+from app.services import booking_service, room_service
 
 router = APIRouter(prefix="/api/bookings", tags=["Bookings"])
 
@@ -25,6 +25,13 @@ def list_bookings(
     Retrieve bookings with optional filters for room and date.
     Optimized with PostgreSQL composite indexes on (room_id, booking_date).
     """
+    if room_id is not None:
+        room = room_service.get_room_by_id(db, room_id)
+        if not room:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Room with ID {room_id} was not found.",
+            )
     return booking_service.get_bookings(db, room_id=room_id, booking_date=date)
 
 

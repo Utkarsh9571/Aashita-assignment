@@ -5,10 +5,12 @@ from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import SQLAlchemyError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.core.config import get_settings
 from app.db.session import Base, SessionLocal, engine
+from app.models import Booking, Room  # noqa: F401 - Ensure models are registered on Base
 from app.routers import bookings, rooms
 from app.seed import seed_rooms
 
@@ -65,7 +67,7 @@ app.add_middleware(
 
 
 # ==============================================================================
-# CLEAN ERROR HANDLING (NEVER EXPOSE RAW STACK TRACES TO CLIENTS)
+# CLEAN ERROR HANDLING (NEVER EXPOSE RAW STACK TRACES OR SQL ERRORS TO CLIENTS)
 # ==============================================================================
 
 @app.exception_handler(RequestValidationError)
@@ -94,10 +96,24 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
-    """Formats standard HTTP exceptions cleanly."""
+    """Formats standard HTTP exceptions cleanly with consistent JSON detail."""
     return JSONResponse(
         status_code=exc.status_code,
         content={"detail": exc.detail},
+    )
+
+
+@app.exception_handler(SQLAlchemyError)
+async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
+    """
+    Catches any lower-level database errors (connections, constraints, query failures).
+    Logs the exception internally while returning a clean, safe message to the client.
+    Guarantees no raw SQL statements, table names, or db credentials leak.
+    """
+    logger.error(f"Database error during {request.method} {request.url}: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={"detail": "A database error occurred. Please try again later."},
     )
 
 

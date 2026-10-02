@@ -1,5 +1,3 @@
-
-
 def test_list_rooms(client):
     """Verify that seeded rooms are returned."""
     response = client.get("/api/rooms")
@@ -29,6 +27,80 @@ def test_create_booking_success(client):
     assert data["start_time"] == "10:00"
     assert data["end_time"] == "11:30"
     assert "id" in data
+
+
+def test_get_booking_by_id(client):
+    """Verify retrieving a single booking by ID (200) and not found (404)."""
+    create_res = client.post(
+        "/api/bookings",
+        json={
+            "room_id": 1,
+            "title": "One-on-One",
+            "date": "2026-10-16",
+            "start_time": "14:00",
+            "end_time": "15:00",
+        },
+    )
+    assert create_res.status_code == 201
+    booking_id = create_res.json()["id"]
+
+    # 200 OK
+    get_res = client.get(f"/api/bookings/{booking_id}")
+    assert get_res.status_code == 200
+    assert get_res.json()["title"] == "One-on-One"
+
+    # 404 Not Found
+    not_found_res = client.get("/api/bookings/99999")
+    assert not_found_res.status_code == 404
+    assert "not found" in not_found_res.json()["detail"].lower()
+
+
+def test_create_booking_room_not_found(client):
+    """Attempting to book a non-existent room returns 404."""
+    res = client.post(
+        "/api/bookings",
+        json={
+            "room_id": 99999,
+            "title": "Ghost Room Meeting",
+            "date": "2026-10-16",
+            "start_time": "10:00",
+            "end_time": "11:00",
+        },
+    )
+    assert res.status_code == 404
+    assert "does not exist" in res.json()["detail"].lower()
+
+
+def test_create_booking_whitespace_title_rejected(client):
+    """Attempting to book with only whitespace title returns 400."""
+    res = client.post(
+        "/api/bookings",
+        json={
+            "room_id": 1,
+            "title": "   ",
+            "date": "2026-10-16",
+            "start_time": "10:00",
+            "end_time": "11:00",
+        },
+    )
+    assert res.status_code == 400
+    assert "whitespace" in res.json()["detail"].lower()
+
+
+def test_create_booking_missing_fields(client):
+    """Missing mandatory fields returns 400 Bad Request."""
+    res = client.post(
+        "/api/bookings",
+        json={
+            "room_id": 1,
+            # title missing
+            "date": "2026-10-16",
+            "start_time": "10:00",
+            "end_time": "11:00",
+        },
+    )
+    assert res.status_code == 400
+    assert "title" in res.json()["detail"].lower()
 
 
 def test_booking_validation_outside_hours(client):
@@ -303,3 +375,30 @@ def test_filter_bookings_by_room_and_date(client):
     assert res_room1.status_code == 200
     assert len(res_room1.json()) == 1
     assert res_room1.json()[0]["title"] == "Room 1 Meeting"
+
+    # Filter with non-existent room_id -> 404
+    res_invalid_room = client.get("/api/bookings?room_id=99999")
+    assert res_invalid_room.status_code == 404
+
+
+def test_get_room_bookings_endpoint(client):
+    """Test GET /api/rooms/{room_id}/bookings endpoint with date filter."""
+    client.post(
+        "/api/bookings",
+        json={
+            "room_id": 1,
+            "title": "Special Session",
+            "date": "2026-11-05",
+            "start_time": "11:00",
+            "end_time": "12:00",
+        },
+    )
+
+    res = client.get("/api/rooms/1/bookings?date=2026-11-05")
+    assert res.status_code == 200
+    assert len(res.json()) >= 1
+    assert any(b["title"] == "Special Session" for b in res.json())
+
+    # Non-existent room -> 404
+    res_404 = client.get("/api/rooms/99999/bookings")
+    assert res_404.status_code == 404
