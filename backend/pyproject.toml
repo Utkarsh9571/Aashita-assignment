@@ -1,0 +1,29 @@
+[project]
+name = "meeting-room-booking-api"
+version = "1.0.0"
+description = "FastAPI backend for Meeting Room Booking System"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.30.0",
+    "sqlalchemy>=2.0.30",
+    "psycopg[binary]>=3.2.0",
+    "psycopg2-binary>=2.9.9",
+    "pydantic>=2.8.0",
+    "pydantic-settings>=2.4.0",
+    "alembic>=1.13.0",
+    "python-dotenv>=1.0.1",
+    "pytest>=8.3.0",
+    "httpx>=0.27.0",
+    "ruff>=0.6.0",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = [
+    "B008",  # Allow Depends/Query in function parameter defaults (standard FastAPI pattern)
+]
