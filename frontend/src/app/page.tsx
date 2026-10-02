@@ -173,12 +173,16 @@ export default function DashboardPage() {
         created.room_name ||
         `Room #${created.room_id}`;
 
+      const toastMessage =
+        created.message ||
+        `"${created.title}" successfully booked for ${
+          created.date || created.booking_date
+        } (${formatTimeRange(created.start_time, created.end_time)}) in ${roomName}.`;
+
       addToast({
         type: 'success',
         title: 'Booking Confirmed',
-        message: `"${created.title}" successfully booked for ${
-          created.date || created.booking_date
-        } (${formatTimeRange(created.start_time, created.end_time)}) in ${roomName}.`,
+        message: toastMessage,
       });
 
       // Immediate refresh of bookings for the active date/filter

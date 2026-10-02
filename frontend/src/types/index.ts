@@ -17,6 +17,7 @@ export interface Booking {
   end_time: string;
   created_at?: string;
   room?: Room;
+  message?: string;
 }
 
 export interface BookingCreatePayload {

@@ -80,7 +80,11 @@ export const Header: React.FC<HeaderProps> = ({
                   type="date"
                   value={selectedDate}
                   onChange={(e) => {
-                    if (e.target.value) onDateChange(e.target.value);
+                    if (e.target.value) {
+                      onDateChange(e.target.value);
+                    } else {
+                      onDateChange(todayStr);
+                    }
                   }}
                   className="bg-transparent text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none cursor-pointer"
                   aria-label="Selected date"

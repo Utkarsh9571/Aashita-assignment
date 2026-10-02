@@ -93,6 +93,7 @@ class BookingResponse(BaseModel):
     start_time: str
     end_time: str
     created_at: datetime
+    message: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -105,15 +106,19 @@ class BookingResponse(BaseModel):
             start_str = start_val.strftime("%H:%M") if isinstance(start_val, time_type) else str(start_val)
             end_str = end_val.strftime("%H:%M") if isinstance(end_val, time_type) else str(end_val)
             room_name = data.room.name if getattr(data, "room", None) else None
+            title = data.title
+            date_val = getattr(data, "booking_date", getattr(data, "date", None))
+            msg = f"Booking '{title}' created successfully for {date_val} ({start_str} - {end_str}) in {room_name or f'Room #{data.room_id}'}."
             return {
                 "id": data.id,
                 "room_id": data.room_id,
                 "room_name": room_name,
-                "title": data.title,
-                "date": getattr(data, "booking_date", getattr(data, "date", None)),
+                "title": title,
+                "date": date_val,
                 "start_time": start_str,
                 "end_time": end_str,
                 "created_at": data.created_at,
+                "message": msg,
             }
         return data
 
