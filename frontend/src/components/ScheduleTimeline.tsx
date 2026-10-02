@@ -63,13 +63,19 @@ export const ScheduleTimeline: React.FC<ScheduleTimelineProps> = ({
     );
   }
 
+  // Ensure ScheduleTimeline strictly receives and processes bookings for the selected date
+  const dateBookings = bookings.filter((b) => {
+    const bDate = b.date || b.booking_date;
+    return !bDate || bDate === selectedDate;
+  });
+
   // If there are zero bookings across all displayed rooms
-  const totalFilteredBookings = bookings.length;
+  const totalFilteredBookings = dateBookings.length;
 
   return (
     <div className="space-y-6">
       {displayedRooms.map((room) => {
-        const roomBookings = bookings.filter((b) => b.room_id === room.id);
+        const roomBookings = dateBookings.filter((b) => b.room_id === room.id);
 
         // Calculate workday progress percentage
         // Total working minutes = 18:00 - 09:00 = 540 min

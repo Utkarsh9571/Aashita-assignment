@@ -81,7 +81,7 @@ export default function DashboardPage() {
     setIsLoadingBookings(true);
     try {
       const data = await fetchBookings({
-        booking_date: selectedDate,
+        date: selectedDate,
         room_id: selectedRoomId !== null ? selectedRoomId : undefined,
       });
       setBookings(data);
@@ -128,7 +128,7 @@ export default function DashboardPage() {
   useEffect(() => {
     let isMounted = true;
     fetchBookings({
-      booking_date: selectedDate,
+      date: selectedDate,
       room_id: selectedRoomId !== null ? selectedRoomId : undefined,
     })
       .then((data) => {
@@ -320,10 +320,10 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-xs sm:text-sm font-bold">
-                  Connection Notice: Cannot reach backend server
+                  Connecting to backend service
                 </p>
                 <p className="text-xs text-rose-700 mt-0.5">
-                  Ensure the FastAPI backend is running (`uvicorn app.main:app --port 8000`).
+                  The backend is connecting. If the service was idle, it may take a few seconds to wake up.
                 </p>
               </div>
             </div>

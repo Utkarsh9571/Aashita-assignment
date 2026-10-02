@@ -1,6 +1,6 @@
-import urllib.request
 import json
 import sys
+import urllib.request
 
 base_url = 'http://localhost:8000'
 
@@ -13,7 +13,7 @@ try:
     room_id = rooms[0]['id']
 
     # Clean any prior bookings for room_id on date 2026-10-02
-    req_bookings = urllib.request.urlopen(f'{base_url}/api/bookings?booking_date=2026-10-02&room_id={room_id}')
+    req_bookings = urllib.request.urlopen(f'{base_url}/api/bookings?date=2026-10-02&room_id={room_id}')
     existing = json.loads(req_bookings.read().decode())
     for b in existing:
         del_req = urllib.request.Request(f'{base_url}/api/bookings/{b["id"]}', method='DELETE')
@@ -27,20 +27,25 @@ try:
         'start_time': '10:00',
         'end_time': '11:00'
     }).encode()
-    req = urllib.request.Request(f'{base_url}/api/bookings', data=payload, headers={'Content-Type': 'application/json'})
+    headers = {'Content-Type': 'application/json'}
+    req = urllib.request.Request(f'{base_url}/api/bookings', data=payload, headers=headers)
     created = json.loads(urllib.request.urlopen(req).read().decode())
     booking_id = created['id']
     print(f'2. Booking created: ID={booking_id}, Title="{created["title"]}"')
 
     # 3. Check conflict detection (409)
     try:
-        req_conflict = urllib.request.Request(f'{base_url}/api/bookings', data=payload, headers={'Content-Type': 'application/json'})
+        req_conflict = urllib.request.Request(f'{base_url}/api/bookings', data=payload, headers=headers)
         urllib.request.urlopen(req_conflict)
         print('ERROR: Conflict was not caught!')
         sys.exit(1)
     except urllib.error.HTTPError as e:
         conflict_body = json.loads(e.read().decode())
-        detail = conflict_body["detail"] if isinstance(conflict_body["detail"], str) else conflict_body["detail"]["message"]
+        detail = (
+            conflict_body["detail"]
+            if isinstance(conflict_body["detail"], str)
+            else conflict_body["detail"]["message"]
+        )
         print(f'3. Conflict correctly caught: HTTP {e.code}, Detail: {detail}')
 
     # 4. Next available slot

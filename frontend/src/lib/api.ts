@@ -93,12 +93,14 @@ export async function fetchRooms(): Promise<Room[]> {
 }
 
 export async function fetchBookings(params: {
+  date?: string;
   booking_date?: string;
   room_id?: number;
 }): Promise<Booking[]> {
   const query = new URLSearchParams();
-  if (params.booking_date) {
-    query.set('booking_date', params.booking_date);
+  const targetDate = params.date || params.booking_date;
+  if (targetDate) {
+    query.set('date', targetDate);
   }
   if (params.room_id !== undefined && params.room_id !== null) {
     query.set('room_id', String(params.room_id));

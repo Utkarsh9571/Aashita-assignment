@@ -108,7 +108,11 @@ class BookingResponse(BaseModel):
             room_name = data.room.name if getattr(data, "room", None) else None
             title = data.title
             date_val = getattr(data, "booking_date", getattr(data, "date", None))
-            msg = f"Booking '{title}' created successfully for {date_val} ({start_str} - {end_str}) in {room_name or f'Room #{data.room_id}'}."
+            target_name = room_name or f"Room #{data.room_id}"
+            msg = (
+                f"Booking '{title}' created successfully for {date_val} "
+                f"({start_str} - {end_str}) in {target_name}."
+            )
             return {
                 "id": data.id,
                 "room_id": data.room_id,

@@ -18,6 +18,7 @@ router = APIRouter(prefix="/api/bookings", tags=["Bookings"])
 @router.get("", response_model=list[BookingResponse], summary="List and filter bookings")
 def list_bookings(
     date: date | None = Query(None, description="Filter bookings by date (YYYY-MM-DD)"),
+    booking_date: date | None = Query(None, description="Alternative alias for date filter (YYYY-MM-DD)"),
     room_id: int | None = Query(None, description="Filter bookings by room ID"),
     db: Session = Depends(get_db),
 ):
@@ -25,6 +26,7 @@ def list_bookings(
     Retrieve bookings with optional filters for room and date.
     Optimized with PostgreSQL composite indexes on (room_id, booking_date).
     """
+    target_date = date or booking_date
     if room_id is not None:
         room = room_service.get_room_by_id(db, room_id)
         if not room:
@@ -32,7 +34,7 @@ def list_bookings(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"Room with ID {room_id} was not found.",
             )
-    return booking_service.get_bookings(db, room_id=room_id, booking_date=date)
+    return booking_service.get_bookings(db, room_id=room_id, booking_date=target_date)
 
 
 @router.get("/{booking_id}", response_model=BookingResponse, summary="Get booking by ID")

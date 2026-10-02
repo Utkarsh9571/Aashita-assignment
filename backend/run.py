@@ -1,5 +1,7 @@
 import os
+
 import uvicorn
+
 from app.core.config import get_settings
 
 

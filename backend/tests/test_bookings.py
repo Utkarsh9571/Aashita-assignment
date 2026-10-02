@@ -402,3 +402,95 @@ def test_get_room_bookings_endpoint(client):
     # Non-existent room -> 404
     res_404 = client.get("/api/rooms/99999/bookings")
     assert res_404.status_code == 404
+
+
+def test_date_filtering_excludes_other_dates(client):
+    """
+    Verify that GET /api/bookings?date=YYYY-MM-DD returns ONLY bookings for that date.
+    Bookings on different dates must NEVER be returned.
+    Also verifies that the booking_date alias behaves identically.
+    """
+    target_date = "2026-11-10"
+    other_date = "2026-11-11"
+    unbooked_date = "2099-01-01"
+
+    # Create a booking on target_date
+    res1 = client.post(
+        "/api/bookings",
+        json={
+            "room_id": 1,
+            "title": "Target Day Session",
+            "date": target_date,
+            "start_time": "10:00",
+            "end_time": "11:00",
+        },
+    )
+    assert res1.status_code == 201
+
+    # Create a booking on other_date
+    res2 = client.post(
+        "/api/bookings",
+        json={
+            "room_id": 1,
+            "title": "Other Day Session",
+            "date": other_date,
+            "start_time": "10:00",
+            "end_time": "11:00",
+        },
+    )
+    assert res2.status_code == 201
+
+    # 1. Query by canonical date parameter
+    res_target = client.get(f"/api/bookings?date={target_date}")
+    assert res_target.status_code == 200
+    target_items = res_target.json()
+    assert len(target_items) == 1
+    assert target_items[0]["title"] == "Target Day Session"
+    assert target_items[0]["date"] == target_date
+
+    # 2. Query for date with no bookings -> must return empty list, never leaking other dates
+    res_empty = client.get(f"/api/bookings?date={unbooked_date}")
+    assert res_empty.status_code == 200
+    assert len(res_empty.json()) == 0
+
+    # 3. Query via booking_date alias -> must filter identically
+    res_alias = client.get(f"/api/bookings?booking_date={target_date}")
+    assert res_alias.status_code == 200
+    assert len(res_alias.json()) == 1
+    assert res_alias.json()[0]["title"] == "Target Day Session"
+
+    res_alias_empty = client.get(f"/api/bookings?booking_date={unbooked_date}")
+    assert res_alias_empty.status_code == 200
+    assert len(res_alias_empty.json()) == 0
+
+
+def test_room_and_date_filtering_combined(client):
+    """Verify that filtering by both room_id and date strictly isolates the intersection."""
+    test_d1 = "2026-11-20"
+    test_d2 = "2026-11-21"
+
+    # Room 1 on Day 1
+    client.post(
+        "/api/bookings",
+        json={"room_id": 1, "title": "R1-D1", "date": test_d1, "start_time": "09:00", "end_time": "10:00"},
+    )
+    # Room 1 on Day 2
+    client.post(
+        "/api/bookings",
+        json={"room_id": 1, "title": "R1-D2", "date": test_d2, "start_time": "09:00", "end_time": "10:00"},
+    )
+    # Room 2 on Day 1
+    client.post(
+        "/api/bookings",
+        json={"room_id": 2, "title": "R2-D1", "date": test_d1, "start_time": "09:00", "end_time": "10:00"},
+    )
+
+    # Combined filter: room 1 + Day 1
+    res = client.get(f"/api/bookings?room_id=1&date={test_d1}")
+    assert res.status_code == 200
+    results = res.json()
+    assert len(results) == 1
+    assert results[0]["title"] == "R1-D1"
+    assert results[0]["room_id"] == 1
+    assert results[0]["date"] == test_d1
+
