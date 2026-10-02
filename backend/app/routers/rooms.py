@@ -57,7 +57,7 @@ def get_room_bookings(
 def get_next_available_slot(
     room_id: int,
     date: date = Query(..., description="Target date (YYYY-MM-DD)"),
-    duration: int = Query(..., ge=1, le=540, description="Meeting duration in minutes (e.g., 30, 45, 60)"),
+    duration: int = Query(..., description="Meeting duration in minutes (e.g., 30, 45, 60)"),
     db: Session = Depends(get_db),
 ):
     """

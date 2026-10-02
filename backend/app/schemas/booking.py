@@ -124,10 +124,12 @@ class AvailableSlot(BaseModel):
 
 
 class NextAvailableResponse(BaseModel):
+    available: bool
     room_id: int
     room_name: str | None = None
     date: date_type
-    duration_minutes: int
-    available: bool
+    duration: int = Field(validation_alias=AliasChoices("duration", "duration_minutes"), serialization_alias="duration")
+    start_time: str | None = None
+    end_time: str | None = None
     slot: AvailableSlot | None = None
     message: str

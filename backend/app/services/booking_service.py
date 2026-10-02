@@ -223,54 +223,72 @@ def find_next_available_slot(
     Finds the earliest continuous available slot of at least `duration_minutes`
     within working hours (09:00 - 18:00) on the requested date.
 
-    ALGORITHM SPECIFICATION (NO EXTERNAL SCHEDULING LIBRARIES):
-    1. Working hours span from 09:00 (540 minutes) to 18:00 (1080 minutes).
-    2. We fetch all existing bookings for the room on this date, ordered chronologically by start_time.
-    3. We maintain `current_pointer` initialized to 09:00.
-    4. For each booking in chronological order:
-       - The gap before this booking begins at `current_pointer` and ends at `booking.start_time`.
-       - If (booking.start_time - current_pointer) >= duration_minutes:
-         -> We have found the earliest available slot! Return [current_pointer, current_pointer + duration].
-       - Otherwise, advance `current_pointer` to max(current_pointer, booking.end_time) to step over the booked block.
-    5. After evaluating all bookings:
-       - Check the gap between `current_pointer` and end of working hours (18:00).
-       - If (18:00 - current_pointer) >= duration_minutes:
-         -> Earliest slot found after the last booking! Return [current_pointer, current_pointer + duration].
-    6. If no gap of sufficient size is found, the room is fully booked for this duration.
+    WHY THIS ALGORITHM WORKS (NO EXTERNAL SCHEDULING LIBRARIES):
+    ------------------------------------------------------------
+    The timeline of a working day is continuous and ordered: [09:00, 18:00].
+    Existing bookings represent occupied blocks on this timeline.
+    By sorting existing bookings strictly by start_time ASC, the day is partitioned
+    into alternating potential gaps and occupied blocks.
 
-    EDGE CASES HANDLED:
-    - Gap before first booking: Handled by step 4 on the first iteration.
-    - Gaps between bookings: Handled by step 4 on subsequent iterations.
-    - Gap after last booking: Handled by step 5.
-    - Gap exactly equal to duration: (start - pointer) >= duration returns True when equal.
-    - Fully booked room: Returns available=False with a clear message.
-    - Out of range duration (<=0 or > 540 minutes): Validated and rejected cleanly.
+    1. We maintain a chronological pointer `current_pointer`, initialized to opening time (09:00).
+       Because the pointer begins at 09:00 and moves monotonically forward, the very first gap
+       that satisfies (gap >= duration_minutes) is GUARANTEED to be the EARLIEST available slot.
+
+    2. As we iterate over each existing booking:
+       - The gap immediately preceding the current booking starts at `current_pointer` and ends
+         at `booking.start_time`.
+       - If (booking.start_time - current_pointer) >= duration_minutes:
+         We immediately return the slot [current_pointer, current_pointer + duration].
+         This naturally handles:
+         * Gap before the very first booking (iteration 0).
+         * Gap exactly equal to duration: (start - pointer == duration) evaluates to True.
+         * Gaps between consecutive bookings.
+         * Chronological precedence: earlier valid gaps are checked and returned before any later gaps.
+       - If the gap is insufficient (< duration_minutes), we advance `current_pointer` to:
+         `max(current_pointer, booking.end_time)`.
+         WHY MAX? Because if two existing bookings are adjacent (e.g. 10:00-11:00 and 11:00-12:00),
+         when booking 2 is inspected, `booking2.start_time` (11:00) equals `current_pointer` (11:00),
+         making gap = 0. The pointer then advances to 12:00 without creating false gaps or false conflicts.
+
+    3. After inspecting all bookings, there may be unused time between the last booking's end and
+       closing time (18:00). We check (18:00 - current_pointer) >= duration_minutes.
+       If it fits, we return [current_pointer, current_pointer + duration].
+
+    4. If no candidate interval accommodates `duration_minutes`, the room is fully booked for that length,
+       and we return `available=False` with an explanatory message.
     """
-    # 1. Validate room exists
+    # 1. Validate target room exists
     room = db.query(Room).filter(Room.id == room_id).first()
     if not room:
         raise RoomNotFoundError(f"Room with ID {room_id} does not exist.")
 
     # 2. Validate requested duration
-    total_working_minutes = time_to_minutes(WORK_END) - time_to_minutes(WORK_START)  # 540 mins
+    work_start_m = time_to_minutes(WORK_START)  # 540 (09:00)
+    work_end_m = time_to_minutes(WORK_END)      # 1080 (18:00)
+    total_working_minutes = work_end_m - work_start_m  # 540 mins
+
     if duration_minutes <= 0:
         raise InvalidDurationError("Duration must be a positive integer greater than 0 minutes.")
+
+    # If the requested duration exceeds the entire working day (540 mins), it cannot possibly fit
     if duration_minutes > total_working_minutes:
         msg = (
             f"Requested duration ({duration_minutes}m) exceeds "
-            f"total working day ({total_working_minutes}m: 09:00 to 18:00)."
+            f"the entire working day ({total_working_minutes}m: 09:00 to 18:00)."
         )
         return NextAvailableResponse(
+            available=False,
             room_id=room.id,
             room_name=room.name,
             date=booking_date,
-            duration_minutes=duration_minutes,
-            available=False,
+            duration=duration_minutes,
+            start_time=None,
+            end_time=None,
             slot=None,
             message=msg,
         )
 
-    # 3. Retrieve existing bookings for this room and date, ordered by start time
+    # 3. Retrieve all existing bookings for that room and date, sorted chronologically by start_time
     existing_bookings = (
         db.query(Booking)
         .filter(Booking.room_id == room_id, Booking.booking_date == booking_date)
@@ -278,63 +296,65 @@ def find_next_available_slot(
         .all()
     )
 
-    work_start_m = time_to_minutes(WORK_START)
-    work_end_m = time_to_minutes(WORK_END)
-
     current_pointer_m = work_start_m
 
     for b in existing_bookings:
         b_start_m = time_to_minutes(b.start_time)
         b_end_m = time_to_minutes(b.end_time)
 
-        # Check gap between current pointer and this booking's start
+        # Gap between current timeline pointer and the start of this booking
         gap = b_start_m - current_pointer_m
+
+        # If gap is greater than or equal to requested duration, earliest slot found!
         if gap >= duration_minutes:
-            # Earliest slot found!
             slot_start = minutes_to_time(current_pointer_m)
             slot_end = minutes_to_time(current_pointer_m + duration_minutes)
+            start_str = slot_start.strftime("%H:%M")
+            end_str = slot_end.strftime("%H:%M")
             return NextAvailableResponse(
+                available=True,
                 room_id=room.id,
                 room_name=room.name,
                 date=booking_date,
-                duration_minutes=duration_minutes,
-                available=True,
-                slot=AvailableSlot(
-                    start_time=slot_start.strftime("%H:%M"),
-                    end_time=slot_end.strftime("%H:%M"),
-                ),
-                message=f"Available slot found from {slot_start.strftime('%H:%M')} to {slot_end.strftime('%H:%M')}.",
+                duration=duration_minutes,
+                start_time=start_str,
+                end_time=end_str,
+                slot=AvailableSlot(start_time=start_str, end_time=end_str),
+                message=f"Available slot found from {start_str} to {end_str}.",
             )
 
-        # Move pointer past the current booking if it extends beyond current pointer
+        # Advance pointer past this booking to continue scanning forward in time
         current_pointer_m = max(current_pointer_m, b_end_m)
 
-    # 4. Check gap after the last booking up to closing time (18:00)
+    # 4. Check remaining time after the last booking up to 18:00 closing time
     gap_at_end = work_end_m - current_pointer_m
     if gap_at_end >= duration_minutes:
         slot_start = minutes_to_time(current_pointer_m)
         slot_end = minutes_to_time(current_pointer_m + duration_minutes)
+        start_str = slot_start.strftime("%H:%M")
+        end_str = slot_end.strftime("%H:%M")
         return NextAvailableResponse(
+            available=True,
             room_id=room.id,
             room_name=room.name,
             date=booking_date,
-            duration_minutes=duration_minutes,
-            available=True,
-            slot=AvailableSlot(
-                start_time=slot_start.strftime("%H:%M"),
-                end_time=slot_end.strftime("%H:%M"),
-            ),
-            message=f"Available slot found from {slot_start.strftime('%H:%M')} to {slot_end.strftime('%H:%M')}.",
+            duration=duration_minutes,
+            start_time=start_str,
+            end_time=end_str,
+            slot=AvailableSlot(start_time=start_str, end_time=end_str),
+            message=f"Available slot found from {start_str} to {end_str}.",
         )
 
-    # 5. No slot available
+    # 5. Room is fully booked for this duration on this date
     date_str = booking_date.strftime("%Y-%m-%d")
     return NextAvailableResponse(
+        available=False,
         room_id=room.id,
         room_name=room.name,
         date=booking_date,
-        duration_minutes=duration_minutes,
-        available=False,
+        duration=duration_minutes,
+        start_time=None,
+        end_time=None,
         slot=None,
-        message=f"No available slot of {duration_minutes} minutes found for '{room.name}' on {date_str}.",
+        message=f"No available slot for the requested duration ({duration_minutes}m) on {date_str}.",
     )
