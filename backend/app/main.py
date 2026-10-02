@@ -132,11 +132,24 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 
 # ==============================================================================
-# ROUTERS & HEALTH CHECK
+# ROUTERS, ROOT & HEALTH CHECK
 # ==============================================================================
 
 app.include_router(rooms.router)
 app.include_router(bookings.router)
+
+
+@app.get("/", tags=["Root"], summary="API Information")
+def root():
+    """Root endpoint providing service metadata and links to documentation."""
+    return {
+        "service": "Meeting Room Booking System API",
+        "status": "operational",
+        "version": "1.0.0",
+        "documentation": "/docs",
+        "health": "/api/health",
+        "environment": settings.ENVIRONMENT,
+    }
 
 
 @app.get("/api/health", tags=["Health"], summary="API Health Check")

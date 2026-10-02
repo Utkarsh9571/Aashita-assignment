@@ -6,7 +6,12 @@ import {
   ApiConflictDetail,
 } from '@/types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// In production, NEXT_PUBLIC_API_URL points to the deployed Render backend URL.
+// In development, it defaults to http://localhost:8000.
+const rawBaseUrl =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8000');
+const API_BASE_URL = rawBaseUrl.replace(/\/+$/, '');
 
 export class ApiError extends Error {
   status: number;
@@ -27,7 +32,7 @@ async function safeFetch(url: string, init?: RequestInit): Promise<Response> {
     const isNetwork =
       err instanceof TypeError || (err instanceof Error && err.name === 'TypeError');
     const msg = isNetwork
-      ? 'Unable to connect to the server. Please check your network connection or verify that the backend is active on http://localhost:8000.'
+      ? 'Unable to connect to the backend server. Please verify your network connection and backend service availability.'
       : err instanceof Error
       ? err.message
       : 'Network communication failed.';

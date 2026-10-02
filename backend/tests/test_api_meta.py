@@ -41,3 +41,23 @@ def test_next_available_invalid_duration(client):
     """Verify 400 for negative or zero duration."""
     response = client.get("/api/rooms/1/next-available?date=2026-10-15&duration=0")
     assert response.status_code == 400
+
+
+def test_root_endpoint(client):
+    """Verify root GET / endpoint returns 200 with service metadata and documentation links."""
+    response = client.get("/")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["service"] == "Meeting Room Booking System API"
+    assert data["status"] == "operational"
+    assert data["documentation"] == "/docs"
+    assert data["health"] == "/api/health"
+
+
+def test_frontend_url_cors_settings():
+    """Verify that FRONTEND_URL is cleanly parsed and added to allowed CORS origins."""
+    from app.core.config import Settings
+    s = Settings(FRONTEND_URL="https://my-custom-domain.vercel.app/")
+    origins = s.parsed_cors_origins
+    assert "https://my-custom-domain.vercel.app" in origins
+

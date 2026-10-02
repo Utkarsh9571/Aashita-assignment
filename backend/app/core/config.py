@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/meeting_rooms"
     ENVIRONMENT: str = "development"
     PORT: int = 8000
+    FRONTEND_URL: str = ""
     CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000,https://*.vercel.app"
 
     model_config = SettingsConfigDict(
@@ -26,9 +27,16 @@ class Settings(BaseSettings):
 
     @property
     def parsed_cors_origins(self) -> list[str]:
-        if not self.CORS_ORIGINS:
+        origins: list[str] = []
+        if self.CORS_ORIGINS:
+            origins.extend([o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()])
+        if self.FRONTEND_URL:
+            trimmed = self.FRONTEND_URL.strip().rstrip("/")
+            if trimmed and trimmed not in origins:
+                origins.append(trimmed)
+        if not origins:
             return ["*"]
-        return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+        return origins
 
 
 @lru_cache
