@@ -9,11 +9,13 @@ export interface Room {
 export interface Booking {
   id: number;
   room_id: number;
+  room_name?: string;
   title: string;
-  booking_date: string;
+  date?: string;
+  booking_date?: string;
   start_time: string;
   end_time: string;
-  created_at: string;
+  created_at?: string;
   room?: Room;
 }
 

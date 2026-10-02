@@ -20,6 +20,21 @@ export class ApiError extends Error {
   }
 }
 
+async function safeFetch(url: string, init?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, init);
+  } catch (err: unknown) {
+    const isNetwork =
+      err instanceof TypeError || (err instanceof Error && err.name === 'TypeError');
+    const msg = isNetwork
+      ? 'Unable to connect to the server. Please check your network connection or verify that the backend is active on http://localhost:8000.'
+      : err instanceof Error
+      ? err.message
+      : 'Network communication failed.';
+    throw new ApiError(0, msg);
+  }
+}
+
 async function handleResponse<T>(res: Response): Promise<T> {
   if (res.ok) {
     return (await res.json()) as T;
@@ -33,6 +48,14 @@ async function handleResponse<T>(res: Response): Promise<T> {
     if (errorBody && errorBody.detail) {
       if (typeof errorBody.detail === 'string') {
         errorMessage = errorBody.detail;
+      } else if (Array.isArray(errorBody.detail)) {
+        errorMessage = errorBody.detail
+          .map((item: { msg?: string; loc?: (string | number)[] }) => {
+            const locKey = item.loc ? item.loc[item.loc.length - 1] : '';
+            return locKey ? `${locKey}: ${item.msg}` : item.msg || '';
+          })
+          .filter(Boolean)
+          .join('; ');
       } else if (typeof errorBody.detail === 'object') {
         const detail = errorBody.detail as ApiConflictDetail;
         if (detail.message) {
@@ -57,7 +80,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
 }
 
 export async function fetchRooms(): Promise<Room[]> {
-  const res = await fetch(`${API_BASE_URL}/api/rooms`, {
+  const res = await safeFetch(`${API_BASE_URL}/api/rooms`, {
     headers: { 'Content-Type': 'application/json' },
     cache: 'no-store',
   });
@@ -76,7 +99,7 @@ export async function fetchBookings(params: {
     query.set('room_id', String(params.room_id));
   }
 
-  const res = await fetch(`${API_BASE_URL}/api/bookings?${query.toString()}`, {
+  const res = await safeFetch(`${API_BASE_URL}/api/bookings?${query.toString()}`, {
     headers: { 'Content-Type': 'application/json' },
     cache: 'no-store',
   });
@@ -86,7 +109,7 @@ export async function fetchBookings(params: {
 export async function createBooking(
   payload: BookingCreatePayload
 ): Promise<Booking> {
-  const res = await fetch(`${API_BASE_URL}/api/bookings`, {
+  const res = await safeFetch(`${API_BASE_URL}/api/bookings`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -97,7 +120,7 @@ export async function createBooking(
 export async function cancelBooking(
   bookingId: number
 ): Promise<{ message: string; booking_id: number }> {
-  const res = await fetch(`${API_BASE_URL}/api/bookings/${bookingId}`, {
+  const res = await safeFetch(`${API_BASE_URL}/api/bookings/${bookingId}`, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json' },
   });
@@ -114,7 +137,7 @@ export async function fetchNextAvailableSlot(
     duration: String(durationMinutes),
   });
 
-  const res = await fetch(
+  const res = await safeFetch(
     `${API_BASE_URL}/api/rooms/${roomId}/next-available?${query.toString()}`,
     {
       headers: { 'Content-Type': 'application/json' },

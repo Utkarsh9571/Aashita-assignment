@@ -11,7 +11,7 @@ interface NextAvailableWidgetProps {
   selectedDate: string;
   defaultRoomId?: number | null;
   onSelectSlot: (roomId: number, date: string, startTime: string, endTime: string) => void;
-  onError: (message: string) => void;
+  onToast: (type: 'success' | 'error' | 'warning' | 'info', title: string, message: string) => void;
 }
 
 export const NextAvailableWidget: React.FC<NextAvailableWidgetProps> = ({
@@ -19,7 +19,7 @@ export const NextAvailableWidget: React.FC<NextAvailableWidgetProps> = ({
   selectedDate,
   defaultRoomId,
   onSelectSlot,
-  onError,
+  onToast,
 }) => {
   const [targetRoomId, setTargetRoomId] = useState<number | null>(null);
   const [durationMinutes, setDurationMinutes] = useState<number>(30);
@@ -28,15 +28,16 @@ export const NextAvailableWidget: React.FC<NextAvailableWidgetProps> = ({
 
   // Active room ID is either user selected, or defaultRoomId, or first room
   const activeRoomId = targetRoomId ?? defaultRoomId ?? (rooms.length > 0 ? rooms[0].id : null);
+  const activeRoom = rooms.find((r) => r.id === activeRoomId);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!activeRoomId) {
-      onError('Please select a room to check.');
+      onToast('warning', 'Room Required', 'Please select a room to check availability.');
       return;
     }
     if (durationMinutes <= 0) {
-      onError('Duration must be greater than zero.');
+      onToast('warning', 'Invalid Duration', 'Duration must be greater than zero.');
       return;
     }
 
@@ -50,9 +51,26 @@ export const NextAvailableWidget: React.FC<NextAvailableWidgetProps> = ({
         durationMinutes
       );
       setSlotResult(data);
+
+      const isFound = data.available ?? data.slot_found;
+      if (isFound && data.start_time && data.end_time) {
+        onToast(
+          'success',
+          'Slot Available',
+          `Found earliest slot from ${formatTimeRange(data.start_time, data.end_time)} in ${
+            activeRoom?.name || 'selected room'
+          }.`
+        );
+      } else {
+        onToast(
+          'warning',
+          'No Available Slot',
+          data.message || `No continuous ${durationMinutes}-minute slot available on this date.`
+        );
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to search for available slot';
-      onError(msg);
+      onToast('error', 'Slot Search Failed', msg);
     } finally {
       setIsLoading(false);
     }
@@ -159,7 +177,7 @@ export const NextAvailableWidget: React.FC<NextAvailableWidgetProps> = ({
                   {formatTimeRange(slotResult.start_time, slotResult.end_time)}
                 </span>
               </div>
-              <p className="text-[11px] text-emerald-700 mb-2.5">
+              <p className="text-[11px] text-emerald-700 mb-2.5 font-medium leading-relaxed">
                 {slotResult.message}
               </p>
 
@@ -187,7 +205,7 @@ export const NextAvailableWidget: React.FC<NextAvailableWidgetProps> = ({
                 <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
                 <span>No Continuous Slot Available</span>
               </div>
-              <p className="text-[11px] text-amber-800 mt-1 leading-relaxed">
+              <p className="text-[11px] text-amber-800 mt-1 leading-relaxed font-medium">
                 {slotResult.message}
               </p>
             </div>

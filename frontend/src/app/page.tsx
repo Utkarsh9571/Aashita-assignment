@@ -43,10 +43,11 @@ export default function DashboardPage() {
       const newToast: ToastMessage = { ...toast, id };
       setToasts((prev) => [...prev, newToast]);
 
-      // Auto dismiss after 6 seconds
+      // Conflicts stay a bit longer (8s) so user can read conflicting details; others 5s
+      const timeoutMs = toast.conflictingBooking ? 8000 : 5000;
       setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
-      }, 6000);
+      }, timeoutMs);
     },
     []
   );
@@ -67,8 +68,8 @@ export default function DashboardPage() {
       setNetworkError(msg);
       addToast({
         type: 'error',
-        title: 'Backend Connection Error',
-        message: `${msg}. Is the FastAPI server running on http://localhost:8000?`,
+        title: 'Server Connection Error',
+        message: msg,
       });
     } finally {
       setIsLoadingRooms(false);
@@ -90,7 +91,7 @@ export default function DashboardPage() {
       setNetworkError(msg);
       addToast({
         type: 'error',
-        title: 'Error Loading Bookings',
+        title: 'Error Loading Schedule',
         message: msg,
       });
     } finally {
@@ -167,32 +168,54 @@ export default function DashboardPage() {
   ): Promise<boolean> => {
     try {
       const created = await createBooking(payload);
+      const roomName =
+        rooms.find((r) => r.id === created.room_id)?.name ||
+        created.room_name ||
+        `Room #${created.room_id}`;
+
       addToast({
         type: 'success',
-        title: 'Booking Confirmed!',
-        message: `"${created.title}" booked successfully for ${formatTimeRange(
-          created.start_time,
-          created.end_time
-        )}.`,
+        title: 'Booking Confirmed',
+        message: `"${created.title}" successfully booked for ${
+          created.date || created.booking_date
+        } (${formatTimeRange(created.start_time, created.end_time)}) in ${roomName}.`,
       });
-      // Refresh current view
+
+      // Immediate refresh of bookings for the active date/filter
       await refreshBookings();
       return true;
     } catch (err: unknown) {
       if (err instanceof ApiError) {
         if (err.status === 409) {
-          // Booking Conflict
+          // Booking Conflict - display actual backend conflict message & conflicting booking
           addToast({
             type: 'error',
-            title: 'Schedule Conflict',
+            title: 'Booking Conflict',
             message: err.message,
             conflictingBooking: err.conflictingBooking,
           });
-        } else {
-          // Validation or business error
+        } else if (err.status === 404) {
           addToast({
-            type: 'warning',
-            title: `Error (${err.status})`,
+            type: 'error',
+            title: 'Room Not Found',
+            message: err.message,
+          });
+        } else if (err.status === 400 || err.status === 422) {
+          addToast({
+            type: 'error',
+            title: 'Validation Error',
+            message: err.message,
+          });
+        } else if (err.status === 0) {
+          addToast({
+            type: 'error',
+            title: 'Network Connection Error',
+            message: err.message,
+          });
+        } else {
+          addToast({
+            type: 'error',
+            title: `Server Error (${err.status})`,
             message: err.message,
           });
         }
@@ -222,15 +245,38 @@ export default function DashboardPage() {
         title: 'Booking Cancelled',
         message: res.message || 'The booking has been successfully removed.',
       });
+      // Immediate refresh of bookings
       await refreshBookings();
       return true;
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to cancel booking.';
-      addToast({
-        type: 'error',
-        title: 'Cancellation Failed',
-        message: msg,
-      });
+      if (err instanceof ApiError) {
+        if (err.status === 404) {
+          addToast({
+            type: 'error',
+            title: 'Booking Not Found',
+            message: err.message,
+          });
+        } else if (err.status === 0) {
+          addToast({
+            type: 'error',
+            title: 'Network Connection Error',
+            message: err.message,
+          });
+        } else {
+          addToast({
+            type: 'error',
+            title: `Cancellation Error (${err.status})`,
+            message: err.message,
+          });
+        }
+      } else {
+        const msg = err instanceof Error ? err.message : 'Failed to cancel booking.';
+        addToast({
+          type: 'error',
+          title: 'Cancellation Failed',
+          message: msg,
+        });
+      }
       return false;
     }
   };
@@ -370,11 +416,11 @@ export default function DashboardPage() {
               selectedDate={selectedDate}
               defaultRoomId={selectedRoomId}
               onSelectSlot={handleSelectSlot}
-              onError={(msg) =>
+              onToast={(type, title, message) =>
                 addToast({
-                  type: 'error',
-                  title: 'Slot Finder Notice',
-                  message: msg,
+                  type,
+                  title,
+                  message,
                 })
               }
             />
