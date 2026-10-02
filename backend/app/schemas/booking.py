@@ -3,7 +3,14 @@ from datetime import datetime
 from datetime import time as time_type
 from typing import Any
 
-from pydantic import AliasChoices, BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import (
+    AliasChoices,
+    BaseModel,
+    ConfigDict,
+    Field,
+    field_validator,
+    model_validator,
+)
 
 WORK_START = time_type(9, 0)
 WORK_END = time_type(18, 0)
@@ -37,6 +44,8 @@ class BookingCreate(BookingBase):
         if self.end_time <= self.start_time:
             start_str = self.start_time.strftime("%H:%M")
             end_str = self.end_time.strftime("%H:%M")
+            if self.end_time == self.start_time:
+                raise ValueError(f"End time ({end_str}) cannot be equal to start time ({start_str}).")
             raise ValueError(f"End time ({end_str}) must be strictly after start time ({start_str}).")
 
         # 2. Enforce working hours: 09:00 - 18:00
@@ -54,6 +63,8 @@ class BookingCreate(BookingBase):
 
 class ConflictingBookingInfo(BaseModel):
     id: int
+    room_id: int
+    room_name: str | None = None
     title: str
     booking_date: date_type = Field(serialization_alias="date")
     start_time: str
@@ -61,8 +72,11 @@ class ConflictingBookingInfo(BaseModel):
 
     @classmethod
     def from_orm_model(cls, booking: Any) -> "ConflictingBookingInfo":
+        room_name = booking.room.name if getattr(booking, "room", None) else None
         return cls(
             id=booking.id,
+            room_id=booking.room_id,
+            room_name=room_name,
             title=booking.title,
             booking_date=booking.booking_date,
             start_time=booking.start_time.strftime("%H:%M"),

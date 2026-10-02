@@ -24,12 +24,45 @@ class BookingConflictError(Exception):
         self.conflicting_booking = conflicting_booking
 
 
+class BookingValidationError(Exception):
+    """Raised when booking time bounds or parameters are invalid."""
+
+
 class RoomNotFoundError(Exception):
     """Raised when a specified room ID does not exist in the database."""
 
 
 class InvalidDurationError(Exception):
     """Raised when an invalid duration is requested for slot finding."""
+
+
+def validate_booking_time_bounds(start_time: time, end_time: time) -> None:
+    """
+    Enforces the core operating time rules:
+    1. start_time must be strictly before end_time (non-zero positive duration).
+    2. start_time must be at or after opening hours (09:00).
+    3. end_time must be at or before closing hours (18:00).
+    """
+    if end_time <= start_time:
+        start_str = start_time.strftime("%H:%M")
+        end_str = end_time.strftime("%H:%M")
+        if end_time == start_time:
+            raise BookingValidationError(
+                f"End time ({end_str}) cannot be equal to start time ({start_str})."
+            )
+        raise BookingValidationError(
+            f"End time ({end_str}) must be strictly after start time ({start_str})."
+        )
+
+    if start_time < WORK_START:
+        raise BookingValidationError(
+            f"Booking start time ({start_time.strftime('%H:%M')}) cannot be before opening hours (09:00)."
+        )
+
+    if end_time > WORK_END:
+        raise BookingValidationError(
+            f"Booking end time ({end_time.strftime('%H:%M')}) cannot exceed closing hours (18:00)."
+        )
 
 
 def get_bookings(
@@ -85,9 +118,17 @@ def find_conflicting_booking(
        09:30 < 11:00 (True) AND 10:00 < 11:30 (True) -> Overlap!
     5. Identical time ranges (e.g., 10:00-11:00 == 10:00-11:00):
        10:00 < 11:00 (True) AND 10:00 < 11:00 (True) -> Overlap!
-    6. BACK-TO-BACK BOOKINGS MUST BE ALLOWED (e.g., existing 10:00-11:00, new 11:00-12:00):
+    6. Same start, different end (e.g., 10:00-11:00 vs 10:00-11:30):
+       10:00 < 11:30 (True) AND 10:00 < 11:00 (True) -> Overlap!
+    7. Same end, different start (e.g., 10:00-11:00 vs 09:30-11:00):
+       10:00 < 11:00 (True) AND 09:30 < 11:00 (True) -> Overlap!
+    8. BACK-TO-BACK BOOKINGS MUST BE ALLOWED (e.g., existing 10:00-11:00, new 11:00-12:00):
        10:00 < 12:00 (True), BUT S2 < E1 is 11:00 < 11:00 (False!)
        Because the inequality is strict (<), contiguous / back-to-back bookings do NOT conflict.
+    9. EXACT BACK-TO-BACK BEFORE (e.g., existing 11:00-12:00, new 10:00-11:00):
+       S1 < E2 is 11:00 < 11:00 (False!). No conflict.
+    10. Different room or different date:
+       Filtered directly by the SQL WHERE clause on (room_id, booking_date), preventing false positives.
     """
     query = db.query(Booking).filter(
         Booking.room_id == room_id,
@@ -104,14 +145,17 @@ def find_conflicting_booking(
 
 def create_booking(db: Session, booking_in: BookingCreate) -> Booking:
     """
-    Creates a new booking after verifying room existence and ensuring no conflicts exist.
+    Creates a new booking after verifying time bounds, room existence, and ensuring no conflicts exist.
     """
-    # 1. Verify target room exists
+    # 1. Enforce time bounds
+    validate_booking_time_bounds(booking_in.start_time, booking_in.end_time)
+
+    # 2. Verify target room exists
     room = db.query(Room).filter(Room.id == booking_in.room_id).first()
     if not room:
         raise RoomNotFoundError(f"Room with ID {booking_in.room_id} does not exist.")
 
-    # 2. Check for time collisions with existing reservations
+    # 3. Check for time collisions with existing reservations
     conflict = find_conflicting_booking(
         db=db,
         room_id=booking_in.room_id,
@@ -129,7 +173,7 @@ def create_booking(db: Session, booking_in: BookingCreate) -> Booking:
         )
         raise BookingConflictError(message=conflict_msg, conflicting_booking=conflict)
 
-    # 3. Persist new booking
+    # 4. Persist new booking
     new_booking = Booking(
         room_id=booking_in.room_id,
         title=booking_in.title,

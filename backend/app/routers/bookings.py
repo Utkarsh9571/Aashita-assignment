@@ -62,6 +62,11 @@ def create_booking(
     """
     try:
         return booking_service.create_booking(db, booking_in)
+    except booking_service.BookingValidationError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        ) from e
     except booking_service.RoomNotFoundError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
