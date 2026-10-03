@@ -146,7 +146,19 @@ pnpm run build
 
 ---
 
-## Production Deployment
+## Deployment
+
+The application is deployed on Render.
+
+### Note about the free Render instance
+
+The backend uses Render's free web-service tier for this assignment.
+
+Render automatically spins down free web services after 15 minutes without inbound traffic. When the service receives a new request after being idle, it may take approximately a minute to start again.
+
+If the demo URL appears unavailable or slow on the first request, please wait for the service to wake up and refresh the page.
+
+This behavior is a limitation of the hosting tier and is not an application error.
 
 Detailed step-by-step instructions are available in [DEPLOYMENT.md](file:///c:/Users/lenovo/Desktop/assignments/aashita/DEPLOYMENT.md).
 
