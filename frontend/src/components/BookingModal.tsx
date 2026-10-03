@@ -131,7 +131,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+          className="fixed inset-0 bg-[#003B45]/65 backdrop-blur-xs transition-opacity"
         />
 
         {/* Modal Dialog */}
@@ -140,22 +140,25 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.96, y: 10 }}
           transition={{ duration: 0.2 }}
-          className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-10"
+          className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden z-10"
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+          {/* Header with Aashita deep teal bar */}
+          <div className="flex items-center justify-between px-6 py-4.5 bg-gradient-to-r from-[#003B45] via-[#042A31] to-[#062F38] text-white">
             <div>
-              <h3 className="text-base font-bold text-slate-900">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#00C9B7]/15 border border-[#00C9B7]/30 text-[#00E0C6] text-[10px] font-bold uppercase tracking-wider mb-1">
+                <span>New Reservation</span>
+              </div>
+              <h3 className="text-base sm:text-lg font-extrabold text-white">
                 Create Room Booking
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Working hours: 09:00 AM – 06:00 PM
+              <p className="text-xs text-teal-100/75 mt-0.5">
+                Standard hours: 09:00 AM – 06:00 PM
               </p>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+              className="p-1.5 rounded-full text-teal-200 hover:text-white hover:bg-teal-500/20 transition"
               aria-label="Close dialog"
             >
               <X className="w-5 h-5" />
@@ -168,10 +171,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <div>
               <label
                 htmlFor="booking-room"
-                className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5"
+                className="block text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
               >
-                <Building2 className="w-3.5 h-3.5 text-slate-400" />
-                <span>Room</span>
+                <Building2 className="w-3.5 h-3.5 text-[#00C9B7]" />
+                <span>Meeting Room</span>
               </label>
               <select
                 id="booking-room"
@@ -180,10 +183,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   setRoomId(e.target.value ? Number(e.target.value) : '');
                   if (errors.room_id) setErrors((prev) => ({ ...prev, room_id: undefined }));
                 }}
-                className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3 py-2.5 bg-slate-50/50 text-slate-800 focus:outline-none focus:ring-2 ${
+                className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3.5 py-2.5 bg-[#F8FCFC] text-slate-800 focus:outline-none focus:ring-2 ${
                   errors.room_id
                     ? 'border-rose-300 focus:ring-rose-500/20'
-                    : 'border-slate-200 focus:ring-indigo-500/20 focus:border-indigo-500'
+                    : 'border-slate-200 focus:ring-[#00C9B7]/30 focus:border-[#00C9B7]'
                 }`}
               >
                 <option value="">Select a meeting room</option>
@@ -205,24 +208,24 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <div>
               <label
                 htmlFor="booking-title"
-                className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5"
+                className="block text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
               >
-                <Tag className="w-3.5 h-3.5 text-slate-400" />
+                <Tag className="w-3.5 h-3.5 text-[#00C9B7]" />
                 <span>Meeting Title</span>
               </label>
               <input
                 id="booking-title"
                 type="text"
-                placeholder="e.g., Sprint Planning & Retrospective"
+                placeholder="e.g., Client Architecture Review"
                 value={title}
                 onChange={(e) => {
                   setTitle(e.target.value);
                   if (errors.title) setErrors((prev) => ({ ...prev, title: undefined }));
                 }}
-                className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3 py-2.5 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
+                className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3.5 py-2.5 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
                   errors.title
                     ? 'border-rose-300 focus:ring-rose-500/20'
-                    : 'border-slate-200 focus:ring-indigo-500/20 focus:border-indigo-500'
+                    : 'border-slate-200 focus:ring-[#00C9B7]/30 focus:border-[#00C9B7]'
                 }`}
               />
               {errors.title && (
@@ -237,9 +240,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <div>
               <label
                 htmlFor="booking-date"
-                className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5"
+                className="block text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
               >
-                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                <Calendar className="w-3.5 h-3.5 text-[#00C9B7]" />
                 <span>Date</span>
               </label>
               <input
@@ -251,10 +254,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   if (errors.booking_date)
                     setErrors((prev) => ({ ...prev, booking_date: undefined }));
                 }}
-                className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 ${
+                className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3.5 py-2.5 bg-white text-slate-800 focus:outline-none focus:ring-2 ${
                   errors.booking_date
                     ? 'border-rose-300 focus:ring-rose-500/20'
-                    : 'border-slate-200 focus:ring-indigo-500/20 focus:border-indigo-500'
+                    : 'border-slate-200 focus:ring-[#00C9B7]/30 focus:border-[#00C9B7]'
                 }`}
               />
               {errors.booking_date && (
@@ -270,9 +273,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <div>
                 <label
                   htmlFor="booking-start"
-                  className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5"
+                  className="block text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
                 >
-                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                  <Clock className="w-3.5 h-3.5 text-[#00C9B7]" />
                   <span>Start Time</span>
                 </label>
                 <input
@@ -292,10 +295,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                       }));
                     }
                   }}
-                  className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 ${
+                  className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3.5 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 ${
                     errors.start_time
                       ? 'border-rose-300 focus:ring-rose-500/20'
-                      : 'border-slate-200 focus:ring-indigo-500/20 focus:border-indigo-500'
+                      : 'border-slate-200 focus:ring-[#00C9B7]/30 focus:border-[#00C9B7]'
                   }`}
                 />
                 {errors.start_time && (
@@ -309,9 +312,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <div>
                 <label
                   htmlFor="booking-end"
-                  className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1.5"
+                  className="block text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
                 >
-                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                  <Clock className="w-3.5 h-3.5 text-[#00C9B7]" />
                   <span>End Time</span>
                 </label>
                 <input
@@ -327,10 +330,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                       setErrors((prev) => ({ ...prev, end_time: undefined }));
                     }
                   }}
-                  className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 ${
+                  className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3.5 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 ${
                     errors.end_time
                       ? 'border-rose-300 focus:ring-rose-500/20'
-                      : 'border-slate-200 focus:ring-indigo-500/20 focus:border-indigo-500'
+                      : 'border-slate-200 focus:ring-[#00C9B7]/30 focus:border-[#00C9B7]'
                   }`}
                 />
                 {errors.end_time && (
@@ -342,9 +345,9 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               </div>
             </div>
 
-            {/* Quick Timeslots Info */}
-            <div className="text-[11px] text-slate-500 bg-slate-50 rounded-lg p-2.5 border border-slate-200/70">
-              Slots must strictly fit within 09:00 AM – 06:00 PM. Consecutive back-to-back bookings (e.g. 10:00–11:00 and 11:00–12:00) are fully supported.
+            {/* Quick Guidelines Notice */}
+            <div className="text-[11px] text-[#003B45] bg-[#F0F7F7] rounded-xl p-3 border border-[#00C9B7]/30 font-medium">
+              Reservations are restricted to 09:00 AM – 06:00 PM. Consecutive back-to-back bookings (e.g. 10:00–11:00 and 11:00–12:00) are fully permitted.
             </div>
 
             {/* Actions */}
@@ -353,18 +356,18 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 transition disabled:opacity-50"
+                className="px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 transition disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 transition disabled:opacity-50 shadow-sm shadow-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold text-[#003B45] bg-gradient-to-r from-[#00C9B7] to-[#00E0C6] hover:from-[#00E0C6] hover:to-[#00C9B7] active:scale-[0.98] transition disabled:opacity-50 shadow-md shadow-teal-500/20 focus:outline-none focus:ring-2 focus:ring-[#00E0C6] focus:ring-offset-2"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin text-[#003B45]" />
                     <span>Checking conflicts...</span>
                   </>
                 ) : (

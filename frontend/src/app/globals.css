@@ -1,26 +1,55 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --aashita-dark: #003B45;
+  --aashita-darker: #022B32;
+  --aashita-navy: #062F38;
+  --aashita-accent: #00C9B7;
+  --aashita-accent-bright: #00E0C6;
+  --aashita-accent-muted: #E6FAF8;
+  --aashita-bg: #F5FAFA;
+  --aashita-text: #10243A;
+  --aashita-muted: #64748B;
+
+  --background: #F5FAFA;
+  --foreground: #10243A;
 }
 
 @theme inline {
+  --color-aashita-dark: var(--aashita-dark);
+  --color-aashita-darker: var(--aashita-darker);
+  --color-aashita-navy: var(--aashita-navy);
+  --color-aashita-accent: var(--aashita-accent);
+  --color-aashita-accent-bright: var(--aashita-accent-bright);
+  --color-aashita-accent-muted: var(--aashita-accent-muted);
+  --color-aashita-bg: var(--aashita-bg);
+  --color-aashita-text: var(--aashita-text);
+  --color-aashita-muted: var(--aashita-muted);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+
+/* Custom subtle scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }

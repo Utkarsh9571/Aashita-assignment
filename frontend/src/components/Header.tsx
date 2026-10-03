@@ -36,38 +36,38 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="border-b border-slate-200 bg-white/80 backdrop-blur-md sticky top-0 z-30 transition-colors">
+    <header className="border-b border-[#00C9B7]/20 bg-gradient-to-r from-[#003B45] via-[#042F37] to-[#062F38] text-white sticky top-0 z-30 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          {/* Logo & Operating Hours */}
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm shadow-indigo-200">
-              <Building2 className="w-5 h-5" />
+          {/* Aashita Technosoft Branding & Hours */}
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00C9B7] to-[#00A89A] flex items-center justify-center text-[#003B45] shadow-md shadow-[#003B45]/50">
+              <Building2 className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold text-slate-900 tracking-tight">
-                  Meeting Spaces
+                <h1 className="text-base sm:text-lg font-extrabold tracking-tight text-white">
+                  Aashita Technosoft
                 </h1>
-                <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                  Dashboard
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#00C9B7]/15 text-[#00E0C6] border border-[#00C9B7]/30">
+                  Meeting Spaces
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mt-0.5">
-                <Clock className="w-3.5 h-3.5 text-slate-400" />
-                <span>Working hours: 09:00 – 18:00</span>
+              <div className="flex items-center gap-1.5 text-xs text-teal-100/70 font-medium mt-0.5">
+                <Clock className="w-3.5 h-3.5 text-[#00C9B7]" />
+                <span>Working hours: 09:00 AM – 06:00 PM</span>
               </div>
             </div>
           </div>
 
-          {/* Date Picker Navigation & Primary Action */}
+          {/* Date Picker Controls & Primary Action */}
           <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
-            {/* Date Nav Controls */}
-            <div className="flex items-center bg-slate-100/90 p-1 rounded-xl border border-slate-200/80 shadow-xs">
+            {/* Pill-shaped Date Nav Container */}
+            <div className="flex items-center bg-[#022228]/80 p-1 rounded-full border border-teal-500/30 shadow-inner">
               <button
                 type="button"
                 onClick={() => handleStepDay(-1)}
-                className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white transition shadow-none hover:shadow-xs focus:outline-none"
+                className="p-1.5 rounded-full text-teal-200 hover:text-white hover:bg-teal-500/20 transition focus:outline-none"
                 title="Previous Day"
                 aria-label="Previous Day"
               >
@@ -75,7 +75,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
 
               <div className="relative flex items-center px-2">
-                <CalendarIcon className="w-4 h-4 text-slate-500 mr-2 pointer-events-none" />
+                <CalendarIcon className="w-4 h-4 text-[#00C9B7] mr-2 pointer-events-none" />
                 <input
                   type="date"
                   value={selectedDate}
@@ -86,7 +86,7 @@ export const Header: React.FC<HeaderProps> = ({
                       onDateChange(todayStr);
                     }
                   }}
-                  className="bg-transparent text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none cursor-pointer"
+                  className="bg-transparent text-xs sm:text-sm font-semibold text-white focus:outline-none cursor-pointer [color-scheme:dark]"
                   aria-label="Selected date"
                 />
               </div>
@@ -94,7 +94,7 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 type="button"
                 onClick={() => handleStepDay(1)}
-                className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white transition shadow-none hover:shadow-xs focus:outline-none"
+                className="p-1.5 rounded-full text-teal-200 hover:text-white hover:bg-teal-500/20 transition focus:outline-none"
                 title="Next Day"
                 aria-label="Next Day"
               >
@@ -102,30 +102,30 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             </div>
 
-            {/* Today Shortcut Button */}
+            {/* Today Shortcut Pill */}
             {!isToday && (
               <button
                 type="button"
                 onClick={() => onDateChange(todayStr)}
-                className="px-2.5 py-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/60 rounded-lg transition"
+                className="px-3 py-1.5 text-xs font-bold text-[#003B45] bg-[#00C9B7] hover:bg-[#00E0C6] rounded-full transition shadow-xs"
               >
                 Today
               </button>
             )}
 
-            {/* Date preview label (human readable) */}
-            <div className="hidden lg:block text-xs font-medium text-slate-500 border-l border-slate-200 pl-3">
+            {/* Date preview label */}
+            <div className="hidden lg:block text-xs font-medium text-teal-200/80 border-l border-teal-700/50 pl-3">
               {formatHumanDate(selectedDate)}
             </div>
 
-            {/* Obvious Primary Action */}
+            {/* Aashita Primary Action Pill Button */}
             <button
               type="button"
               id="new-booking-btn"
               onClick={onOpenBookingModal}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 transition-colors shadow-sm shadow-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ml-auto sm:ml-0"
+              className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold text-[#003B45] bg-gradient-to-r from-[#00C9B7] to-[#00E0C6] hover:from-[#00E0C6] hover:to-[#00C9B7] active:scale-[0.98] transition shadow-md shadow-teal-950/40 focus:outline-none focus:ring-2 focus:ring-[#00E0C6] focus:ring-offset-2 focus:ring-offset-[#003B45] ml-auto sm:ml-0"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 stroke-[2.5]" />
               <span>Book Room</span>
             </button>
           </div>

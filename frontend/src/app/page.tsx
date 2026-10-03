@@ -11,7 +11,7 @@ import { ToastContainer } from '@/components/Toast';
 import { Room, Booking, BookingCreatePayload, ToastMessage } from '@/types';
 import { fetchRooms, fetchBookings, createBooking, cancelBooking, ApiError } from '@/lib/api';
 import { getTodayDateString, formatHumanDate, formatTimeRange } from '@/lib/dateUtils';
-import { AlertCircle, RefreshCw, Calendar, CheckCircle } from 'lucide-react';
+import { AlertCircle, RefreshCw, Calendar, CheckCircle, ShieldCheck } from 'lucide-react';
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState<string>(getTodayDateString());
@@ -43,7 +43,7 @@ export default function DashboardPage() {
       const newToast: ToastMessage = { ...toast, id };
       setToasts((prev) => [...prev, newToast]);
 
-      // Conflicts stay a bit longer (8s) so user can read conflicting details; others 5s
+      // Conflicts stay longer (8s) so user can review conflicting details; others 5s
       const timeoutMs = toast.conflictingBooking ? 8000 : 5000;
       setTimeout(() => {
         setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -298,7 +298,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/60 text-slate-900 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F5FAFA] text-[#10243A] flex flex-col font-sans">
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 
@@ -311,6 +311,25 @@ export default function DashboardPage() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+        {/* Aashita Branded Hero Section */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#003B45] via-[#042A31] to-[#062F38] text-white p-6 sm:p-8 shadow-md border border-[#00C9B7]/25">
+          <div className="relative z-10 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00C9B7]/15 border border-[#00C9B7]/30 text-[#00E0C6] text-xs font-bold uppercase tracking-wider mb-3">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00E0C6] animate-pulse" />
+              <span>Enterprise Workspace Portal</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
+              Meeting Room Booking System
+            </h1>
+            <p className="mt-2 text-xs sm:text-sm text-teal-100/80 leading-relaxed font-normal">
+              Find and reserve available conference rooms with automatic conflict prevention, real-time availability scanning, and instant schedule verification.
+            </p>
+          </div>
+
+          {/* Decorative turquoise glow effect */}
+          <div className="absolute -right-10 -bottom-14 w-60 h-60 rounded-full bg-[#00C9B7]/15 blur-3xl pointer-events-none" />
+        </div>
+
         {/* Backend Connection Error Alert Banner */}
         {networkError && (
           <div className="rounded-2xl p-4 bg-rose-50 border border-rose-200 text-rose-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
@@ -323,7 +342,7 @@ export default function DashboardPage() {
                   Connecting to backend service
                 </p>
                 <p className="text-xs text-rose-700 mt-0.5">
-                  The backend is connecting. If the service was idle, it may take a few seconds to wake up.
+                  The backend service is initializing. Please verify network access or retry.
                 </p>
               </div>
             </div>
@@ -333,7 +352,7 @@ export default function DashboardPage() {
                 refreshRooms();
                 refreshBookings();
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-white border border-rose-300 text-rose-800 hover:bg-rose-100/50 transition shrink-0 self-start sm:self-auto"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white border border-rose-300 text-rose-800 hover:bg-rose-100/50 transition shrink-0 self-start sm:self-auto"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Retry Connection</span>
@@ -344,25 +363,25 @@ export default function DashboardPage() {
         {/* Date Context and Quick Summary */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-2xs">
           <div>
-            <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-[#003B45] uppercase tracking-wider">
               Selected Schedule
             </span>
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900 mt-0.5">
+            <h2 className="text-lg sm:text-xl font-extrabold text-[#10243A] mt-0.5">
               {formatHumanDate(selectedDate)}
             </h2>
           </div>
-          <div className="flex items-center gap-4 text-xs font-medium text-slate-600">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-slate-400" />
+          <div className="flex items-center gap-3 text-xs font-medium text-slate-600">
+            <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-full">
+              <Calendar className="w-3.5 h-3.5 text-slate-400" />
               <span>
-                <strong className="text-slate-900">{bookings.length}</strong> active{' '}
+                <strong className="text-[#10243A] font-bold">{bookings.length}</strong> active{' '}
                 {bookings.length === 1 ? 'booking' : 'bookings'}
               </span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <CheckCircle className="w-4 h-4 text-emerald-500" />
+            <div className="flex items-center gap-1.5 bg-[#E6FAF8] border border-[#00C9B7]/30 text-[#003B45] px-3 py-1.5 rounded-full font-bold">
+              <CheckCircle className="w-3.5 h-3.5 text-[#00C9B7]" />
               <span>
-                <strong className="text-slate-900">{rooms.length}</strong> rooms ready
+                <strong>{rooms.length}</strong> rooms configured
               </span>
             </div>
           </div>
@@ -383,20 +402,20 @@ export default function DashboardPage() {
           {/* Main Bookings & Timeline (2 Columns) */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-900">
+              <h3 className="text-sm font-bold text-[#10243A]">
                 {selectedRoomId
                   ? `${rooms.find((r) => r.id === selectedRoomId)?.name || 'Room'} Bookings`
-                  : 'All Room Schedules'}
+                  : 'All Meeting Room Schedules'}
               </h3>
               <button
                 type="button"
                 onClick={() => refreshBookings()}
                 disabled={isLoadingBookings}
-                className="text-xs font-semibold text-slate-500 hover:text-slate-800 flex items-center gap-1 transition"
+                className="text-xs font-semibold text-[#003B45] hover:text-[#00C9B7] flex items-center gap-1.5 transition"
                 title="Refresh schedule"
               >
                 <RefreshCw
-                  className={`w-3.5 h-3.5 ${isLoadingBookings ? 'animate-spin text-indigo-600' : ''}`}
+                  className={`w-3.5 h-3.5 ${isLoadingBookings ? 'animate-spin text-[#00C9B7]' : ''}`}
                 />
                 <span>Refresh</span>
               </button>
@@ -429,20 +448,21 @@ export default function DashboardPage() {
               }
             />
 
-            {/* Quick Rules / Help Card */}
+            {/* Quick Rules / Guidelines Card */}
             <div className="bg-white rounded-2xl border border-slate-200/90 p-5 text-xs text-slate-600 space-y-3 shadow-2xs">
-              <h4 className="font-bold text-slate-900 text-sm">
-                Booking Guidelines
-              </h4>
-              <ul className="space-y-2 list-disc list-inside text-slate-600 leading-relaxed">
+              <div className="flex items-center gap-2 text-[#003B45] font-bold text-sm">
+                <ShieldCheck className="w-4 h-4 text-[#00C9B7]" />
+                <h4>Aashita Booking Policies</h4>
+              </div>
+              <ul className="space-y-2 list-disc list-inside text-slate-600 leading-relaxed font-normal">
                 <li>
-                  <strong className="text-slate-800">Working hours:</strong> 09:00 AM – 06:00 PM only.
+                  <strong className="text-[#10243A] font-semibold">Standard Hours:</strong> 09:00 AM – 06:00 PM business schedule.
                 </li>
                 <li>
-                  <strong className="text-slate-800">Back-to-back:</strong> Fully allowed (e.g. 10:00–11:00 followed immediately by 11:00–12:00).
+                  <strong className="text-[#10243A] font-semibold">Back-to-Back:</strong> Consecutive slots permitted (e.g. 10:00–11:00 &amp; 11:00–12:00).
                 </li>
                 <li>
-                  <strong className="text-slate-800">Instant conflict check:</strong> Overlapping reservations are blocked both client-side and server-side.
+                  <strong className="text-[#10243A] font-semibold">Conflict Check:</strong> Automated real-time conflict prevention for any overlaps.
                 </li>
               </ul>
             </div>
