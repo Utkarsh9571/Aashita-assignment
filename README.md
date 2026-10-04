@@ -124,18 +124,26 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Running Automated Tests
 
-### Backend Test Suite
+### Backend Test Suite (Pytest)
 ```bash
 cd backend
-.venv\Scripts\pytest -v
+pytest -v
 ```
-Runs 64 automated tests covering:
-- Room endpoints and validation
-- Booking conflict matrix (partial overlaps, containment, exact matches, boundaries)
+Runs 65 automated tests using isolated in-memory test fixtures covering:
+- Room endpoints and metadata validation
+- Complete booking conflict matrix (partial overlaps, containment, exact matches, boundaries)
 - Back-to-back booking permission (e.g. 10:00–11:00 and 11:00–12:00)
 - Working hours restrictions (09:00–18:00)
-- Next available slot continuous duration algorithm
-- E2E 22-step integration workflow
+- Earliest next available slot continuous duration algorithm across all gap configurations
+- Clean toast payload structure and error messages
+
+### Live End-to-End Workflow Scripts
+When both backend (`http://localhost:8000`) and frontend (`http://localhost:3000`) servers are running, you can run the live integration scripts:
+```bash
+cd backend
+python scripts/live_e2e_test.py
+python scripts/full_workflow_test.py
+```
 
 ### Frontend Production Build & Linting
 ```bash
@@ -146,24 +154,21 @@ pnpm run build
 
 ---
 
-## Deployment
+## Deployment Readiness
 
-The application is deployed on Render.
+The application is structured and configured for deployment on **Render** (Backend API), **Vercel** (Frontend), and **Neon** (Managed PostgreSQL).
 
-### Note about the free Render instance
+### Note regarding Render free tier
 
-The backend uses Render's free web-service tier for this assignment.
+When deployed on Render's free tier:
+- Render automatically spins down free web services after 15 minutes of inactivity.
+- When a request is received, the service will take ~50-60 seconds to spin back up ("cold start").
+- This is standard hosting behavior on the free tier, not an application defect.
 
-Render automatically spins down free web services after 15 minutes without inbound traffic. When the service receives a new request after being idle, it may take approximately a minute to start again.
+Detailed step-by-step instructions for provisioning and connecting Neon, Render, and Vercel are available in [DEPLOYMENT.md](DEPLOYMENT.md).
 
-If the demo URL appears unavailable or slow on the first request, please wait for the service to wake up and refresh the page.
-
-This behavior is a limitation of the hosting tier and is not an application error.
-
-Detailed step-by-step instructions are available in [DEPLOYMENT.md](file:///c:/Users/lenovo/Desktop/assignments/aashita/DEPLOYMENT.md).
-
-### Summary:
-1. **Database**: Create a PostgreSQL database on [Neon](https://neon.tech) or [Render](https://render.com). Copy the connection string.
+### Deployment Overview:
+1. **Database**: Create a PostgreSQL database on [Neon](https://neon.tech), [Render](https://render.com), or [Supabase](https://supabase.com). Copy the connection string.
 2. **Backend on Render**:
    - Create a Web Service pointing to `backend` directory.
    - Build Command: `pip install -r requirements.txt`
@@ -178,3 +183,4 @@ Detailed step-by-step instructions are available in [DEPLOYMENT.md](file:///c:/U
 
 ## License
 MIT
+

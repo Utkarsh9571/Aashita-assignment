@@ -1,9 +1,21 @@
+"""
+Full 22-Step End-to-End Live Workflow Verification Script
+---------------------------------------------------------
+Prerequisites:
+- Backend server must be running at http://localhost:8000 (or set BASE_BACKEND_URL)
+- Frontend server must be running at http://localhost:3000 (or set BASE_FRONTEND_URL)
+
+Usage:
+    python scripts/full_workflow_test.py
+"""
+
 import json
+import os
 import urllib.error
 import urllib.request
 
-BASE_BACKEND = "http://localhost:8000"
-BASE_FRONTEND = "http://localhost:3000"
+BASE_BACKEND = os.environ.get("BASE_BACKEND_URL", "http://localhost:8000")
+BASE_FRONTEND = os.environ.get("BASE_FRONTEND_URL", "http://localhost:3000")
 
 def run_request(url, method="GET", data=None):
     headers = {"Content-Type": "application/json", "Connection": "close"}
@@ -28,7 +40,7 @@ def run_request(url, method="GET", data=None):
         return 0, str(e)
 
 
-def test_full_workflow():
+def run_full_workflow():
     print("=" * 70)
     print("STARTING FULL END-TO-END WORKFLOW INTEGRATION AUDIT")
     print("=" * 70)
@@ -308,4 +320,5 @@ def test_full_workflow():
 
 
 if __name__ == "__main__":
-    test_full_workflow()
+    run_full_workflow()
+

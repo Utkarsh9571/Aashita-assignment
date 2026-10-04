@@ -1,10 +1,10 @@
-from fastapi.testclient import TestClient
+"""
+Tests verifying backend response payloads for UI toast notifications and conflict messages.
+Uses the isolated client fixture to ensure zero database pollution.
+"""
 
-from app.main import app
 
-client = TestClient(app)
-
-def test_toast_scenario_conflict_detail():
+def test_toast_scenario_conflict_detail(client):
     """Verify 409 returns exact conflict message and conflicting_booking structure"""
     # 1. Create a booking
     res1 = client.post(
@@ -45,7 +45,8 @@ def test_toast_scenario_conflict_detail():
     # Clean up
     client.delete(f"/api/bookings/{booking1['id']}")
 
-def test_toast_scenario_room_not_found():
+
+def test_toast_scenario_room_not_found(client):
     """Verify 404 on non-existent room returns helpful message"""
     res = client.post(
         "/api/bookings",
@@ -62,7 +63,8 @@ def test_toast_scenario_room_not_found():
     assert "detail" in body
     assert "99999" in body["detail"]
 
-def test_toast_scenario_booking_not_found():
+
+def test_toast_scenario_booking_not_found(client):
     """Verify 404 on cancellation of non-existent booking returns helpful message"""
     res = client.delete("/api/bookings/999999")
     assert res.status_code == 404
@@ -70,7 +72,8 @@ def test_toast_scenario_booking_not_found():
     assert "detail" in body
     assert "999999" in body["detail"]
 
-def test_toast_scenario_validation_errors():
+
+def test_toast_scenario_validation_errors(client):
     """Verify 400 returns clear human-readable business validation messages"""
     # Start after end
     res = client.post(
@@ -100,7 +103,8 @@ def test_toast_scenario_validation_errors():
     assert res2.status_code == 400
     assert "opening hours" in res2.json()["detail"].lower()
 
-def test_toast_scenario_next_available_messages():
+
+def test_toast_scenario_next_available_messages(client):
     """Verify next available returns clear messages when room not found, duration invalid, or slot computed"""
     # Invalid duration
     res = client.get("/api/rooms/1/next-available?date=2026-11-20&duration=0")

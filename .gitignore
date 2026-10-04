@@ -1,26 +1,32 @@
-# Environment variables
+# ==============================================================================
+# Environment Variables & Secrets (Keep confidential)
+# ==============================================================================
 .env
+.env.*
 .env.local
 .env.*.local
 *.env
 !.env.example
+!**/.env.example
 
-# Python
+# ==============================================================================
+# Python / FastAPI / Alembic / Pytest
+# ==============================================================================
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
 env/
+venv/
+.venv/
+ENV/
 build/
 develop-eggs/
 dist/
 downloads/
 eggs/
 .eggs/
-/lib/
-/lib64/
-!frontend/src/lib/
 parts/
 sdist/
 var/
@@ -34,20 +40,27 @@ share/python-wheels/
 htmlcov/
 .mypy_cache/
 .ruff_cache/
-venv/
-.venv/
-ENV/
+*.db
+*.sqlite
+*.sqlite3
 
-# Node / Next.js
+# ==============================================================================
+# Node / Next.js / Vercel
+# ==============================================================================
 node_modules/
 .next/
 out/
+.vercel
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+pnpm-debug.log*
+*.tsbuildinfo
 
-# IDE / OS
+# ==============================================================================
+# Operating System & IDE Files
+# ==============================================================================
 .vscode/
 .idea/
 *.swp
