@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://postgres:postgres@localhost:5432/meeting_rooms"
     ENVIRONMENT: str = "development"
     PORT: int = 8000
-    FRONTEND_URL: str = ""
-    CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000,https://*.vercel.app"
+    FRONTEND_URL: str = "https://aashita-assignment.vercel.app"
+    CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000,https://aashita-assignment.vercel.app,https://*.vercel.app"
 
     model_config = SettingsConfigDict(
         env_file=os.path.join(os.path.dirname(__file__), "..", "..", ".env"),

@@ -86,8 +86,8 @@ Under the **Environment Variables** tab, add the following:
 | :--- | :--- | :--- |
 | `DATABASE_URL` | `postgresql://user:pass@ep-xyz.aws.neon.tech/neondb?sslmode=require` | Cloud DB connection string |
 | `ENVIRONMENT` | `production` | Production environment flag |
-| `FRONTEND_URL` | `https://<your-app>.vercel.app` | Vercel domain to allow in CORS |
-| `CORS_ORIGINS` | `https://*.vercel.app` | Comma-separated allowed origins |
+| `FRONTEND_URL` | `https://aashita-assignment.vercel.app` | Vercel domain to allow in CORS |
+| `CORS_ORIGINS` | `http://localhost:3000,https://aashita-assignment.vercel.app,https://*.vercel.app` | Comma-separated allowed origins |
 | `PYTHON_VERSION` | `3.12.0` | Recommended Python version |
 
 ### Step 3: Automated Database Migration & Seeding
@@ -101,11 +101,11 @@ The backend handles database initialization automatically on startup:
   ```
 
 ### Step 4: Verify Backend Health
-Once deployed, copy your Render service URL (e.g. `https://meeting-room-booking-api.onrender.com`):
-- Root metadata: `GET https://meeting-room-booking-api.onrender.com/`
-- Health check: `GET https://meeting-room-booking-api.onrender.com/api/health`
-- Interactive API Docs: `GET https://meeting-room-booking-api.onrender.com/docs`
-- Seeded Rooms: `GET https://meeting-room-booking-api.onrender.com/api/rooms`
+Once deployed, verify the Render service URL (`https://aashita-assignment.onrender.com`):
+- Root metadata: `GET https://aashita-assignment.onrender.com/`
+- Health check: `GET https://aashita-assignment.onrender.com/api/health`
+- Interactive API Docs: `GET https://aashita-assignment.onrender.com/docs`
+- Seeded Rooms: `GET https://aashita-assignment.onrender.com/api/rooms`
 
 ---
 
@@ -131,7 +131,7 @@ Under the **Environment Variables** section, add:
 
 | Key | Value | Environment |
 | :--- | :--- | :--- |
-| `NEXT_PUBLIC_API_URL` | `https://meeting-room-booking-api.onrender.com` | Production, Preview, Development |
+| `NEXT_PUBLIC_API_URL` | `https://aashita-assignment.onrender.com` | Production, Preview, Development |
 
 > **Note**: Do NOT include a trailing slash. If added inadvertently, the frontend client automatically sanitizes it.
 

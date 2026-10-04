@@ -2,6 +2,14 @@
 
 A production-ready full-stack Meeting Room Booking System designed for reliable room reservations, zero-overlap scheduling, and instantaneous slot discovery.
 
+- 🌐 **Live Web Application**: [https://aashita-assignment.vercel.app/](https://aashita-assignment.vercel.app/)
+- ⚡ **Live Backend REST API**: [https://aashita-assignment.onrender.com/](https://aashita-assignment.onrender.com/)
+- 📖 **Interactive Swagger UI**: [https://aashita-assignment.onrender.com/docs](https://aashita-assignment.onrender.com/docs)
+- 🩺 **API Health Check**: [https://aashita-assignment.onrender.com/api/health](https://aashita-assignment.onrender.com/api/health)
+
+---
+
+### Tech Stack
 - **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS v4, Framer Motion, Lucide Icons
 - **Backend**: Python FastAPI, SQLAlchemy 2.0, Pydantic v2, Uvicorn, Alembic
 - **Database**: PostgreSQL (Neon Serverless / Render PostgreSQL / Supabase)
@@ -61,17 +69,17 @@ The database automatically initializes with 5 conference rooms if empty:
 
 | Variable | Required | Default / Example | Purpose |
 | :--- | :---: | :--- | :--- |
-| `DATABASE_URL` | Yes | `postgresql://user:pass@localhost:5432/meeting_rooms` | PostgreSQL connection string |
-| `ENVIRONMENT` | Yes | `development` (or `production`) | Application environment |
+| `DATABASE_URL` | Yes | `postgresql://user:pass@ep-xyz.us-east-2.aws.neon.tech/neondb?sslmode=require` | PostgreSQL connection string |
+| `ENVIRONMENT` | Yes | `production` (or `development`) | Application environment |
 | `PORT` | Yes | `8000` | Port for the Uvicorn server (Render sets `$PORT`) |
-| `FRONTEND_URL` | Production | `https://<your-app>.vercel.app` | Deployed Vercel frontend URL |
-| `CORS_ORIGINS` | No | `http://localhost:3000,https://*.vercel.app` | Comma-separated allowed CORS origins |
+| `FRONTEND_URL` | Production | `https://aashita-assignment.vercel.app` | Deployed Vercel frontend URL |
+| `CORS_ORIGINS` | No | `http://localhost:3000,https://aashita-assignment.vercel.app,https://*.vercel.app` | Comma-separated allowed CORS origins |
 
 ### 2. Frontend Environment Variables (`frontend/.env.local`)
 
 | Variable | Required | Default / Example | Purpose |
 | :--- | :---: | :--- | :--- |
-| `NEXT_PUBLIC_API_URL` | Yes | `http://localhost:8000` (local) / `https://<app>.onrender.com` (prod) | Base URL for FastAPI REST endpoints |
+| `NEXT_PUBLIC_API_URL` | Yes | `https://aashita-assignment.onrender.com` (prod) / `http://localhost:8000` (local) | Base URL for FastAPI REST endpoints |
 
 ---
 
@@ -138,9 +146,15 @@ Runs 65 automated tests using isolated in-memory test fixtures covering:
 - Clean toast payload structure and error messages
 
 ### Live End-to-End Workflow Scripts
-When both backend (`http://localhost:8000`) and frontend (`http://localhost:3000`) servers are running, you can run the live integration scripts:
+You can run the end-to-end integration test suites against local or live deployed instances:
 ```bash
 cd backend
+
+# Option A: Run against deployed production instances
+BASE_BACKEND_URL=https://aashita-assignment.onrender.com python scripts/live_e2e_test.py
+BASE_BACKEND_URL=https://aashita-assignment.onrender.com BASE_FRONTEND_URL=https://aashita-assignment.vercel.app python scripts/full_workflow_test.py
+
+# Option B: Run against local development servers (when running on localhost:8000 and localhost:3000)
 python scripts/live_e2e_test.py
 python scripts/full_workflow_test.py
 ```
@@ -154,30 +168,23 @@ pnpm run build
 
 ---
 
-## Deployment Readiness
+## Production Deployment Details
 
-The application is structured and configured for deployment on **Render** (Backend API), **Vercel** (Frontend), and **Neon** (Managed PostgreSQL).
+The application is deployed live on **Render** (FastAPI Backend API), **Vercel** (Next.js Frontend CDN), and **Neon** (Managed Cloud PostgreSQL):
+
+- 🌐 **Frontend Application**: [https://aashita-assignment.vercel.app/](https://aashita-assignment.vercel.app/)
+- ⚡ **Backend API**: [https://aashita-assignment.onrender.com/](https://aashita-assignment.onrender.com/)
+- 📖 **Interactive Swagger UI**: [https://aashita-assignment.onrender.com/docs](https://aashita-assignment.onrender.com/docs)
+- 🩺 **Health Check**: [https://aashita-assignment.onrender.com/api/health](https://aashita-assignment.onrender.com/api/health)
 
 ### Note regarding Render free tier
 
-When deployed on Render's free tier:
-- Render automatically spins down free web services after 15 minutes of inactivity.
-- When a request is received, the service will take ~50-60 seconds to spin back up ("cold start").
+When hosted on Render's free tier:
+- Render spins down web services after 15 minutes of inactivity.
+- When a new request arrives, it takes ~50-60 seconds to spin back up ("cold start").
 - This is standard hosting behavior on the free tier, not an application defect.
 
-Detailed step-by-step instructions for provisioning and connecting Neon, Render, and Vercel are available in [DEPLOYMENT.md](DEPLOYMENT.md).
-
-### Deployment Overview:
-1. **Database**: Create a PostgreSQL database on [Neon](https://neon.tech), [Render](https://render.com), or [Supabase](https://supabase.com). Copy the connection string.
-2. **Backend on Render**:
-   - Create a Web Service pointing to `backend` directory.
-   - Build Command: `pip install -r requirements.txt`
-   - Start Command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-   - Set `DATABASE_URL`, `ENVIRONMENT=production`, and `FRONTEND_URL`.
-3. **Frontend on Vercel**:
-   - Import repository and set Root Directory to `frontend`.
-   - Set `NEXT_PUBLIC_API_URL` to your deployed Render URL.
-   - Deploy.
+Detailed step-by-step instructions for provisioning, configuring, and verifying are available in [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 

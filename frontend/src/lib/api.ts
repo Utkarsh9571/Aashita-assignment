@@ -10,7 +10,9 @@ import {
 // In development, it defaults to http://localhost:8000.
 const rawBaseUrl =
   process.env.NEXT_PUBLIC_API_URL ||
-  (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8000');
+  (process.env.NODE_ENV === 'production'
+    ? 'https://aashita-assignment.onrender.com'
+    : 'http://localhost:8000');
 const API_BASE_URL = rawBaseUrl.replace(/\/+$/, '');
 
 export class ApiError extends Error {
