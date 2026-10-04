@@ -222,7 +222,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   setTitle(e.target.value);
                   if (errors.title) setErrors((prev) => ({ ...prev, title: undefined }));
                 }}
-                className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3.5 py-2.5 bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 ${
+                className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3.5 py-2.5 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
                   errors.title
                     ? 'border-rose-300 focus:ring-rose-500/20'
                     : 'border-slate-200 focus:ring-[#00C9B7]/40'
