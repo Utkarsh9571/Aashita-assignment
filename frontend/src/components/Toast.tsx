@@ -80,7 +80,7 @@ export const ToastContainer: React.FC<ToastProps> = ({ toasts, onDismiss }) => {
                   </div>
 
                   {/* Actual Backend Message */}
-                  <p className="text-xs mt-1 opacity-90 leading-relaxed break-words font-medium">
+                  <p className="text-xs mt-1 opacity-90 leading-relaxed wrap-break-word font-medium">
                     {toast.message}
                   </p>
 

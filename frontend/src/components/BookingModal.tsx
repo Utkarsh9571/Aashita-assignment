@@ -143,7 +143,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
           className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden z-10"
         >
           {/* Header with Aashita deep teal bar */}
-          <div className="flex items-center justify-between px-6 py-4.5 bg-gradient-to-r from-[#003B45] via-[#042A31] to-[#062F38] text-white">
+          <div className="flex items-center justify-between px-6 py-4.5 bg-linear-to-r from-[#003B45] via-[#042A31] to-[#062F38] text-white">
             <div>
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#00C9B7]/15 border border-[#00C9B7]/30 text-[#00E0C6] text-[10px] font-bold uppercase tracking-wider mb-1">
                 <span>New Reservation</span>
@@ -171,7 +171,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <div>
               <label
                 htmlFor="booking-room"
-                className="block text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
+                className="flex items-center gap-1.5 text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider"
               >
                 <Building2 className="w-3.5 h-3.5 text-[#00C9B7]" />
                 <span>Meeting Room</span>
@@ -208,7 +208,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <div>
               <label
                 htmlFor="booking-title"
-                className="block text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
+                className="flex items-center gap-1.5 text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider"
               >
                 <Tag className="w-3.5 h-3.5 text-[#00C9B7]" />
                 <span>Meeting Title</span>
@@ -240,7 +240,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
             <div>
               <label
                 htmlFor="booking-date"
-                className="block text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
+                className="flex items-center gap-1.5 text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider"
               >
                 <Calendar className="w-3.5 h-3.5 text-[#00C9B7]" />
                 <span>Date</span>
@@ -273,7 +273,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <div>
                 <label
                   htmlFor="booking-start"
-                  className="block text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
+                  className="flex items-center gap-1.5 text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider"
                 >
                   <Clock className="w-3.5 h-3.5 text-[#00C9B7]" />
                   <span>Start Time</span>
@@ -312,7 +312,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <div>
                 <label
                   htmlFor="booking-end"
-                  className="block text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider flex items-center gap-1.5"
+                  className="flex items-center gap-1.5 text-[11px] font-bold text-[#003B45] mb-1.5 uppercase tracking-wider"
                 >
                   <Clock className="w-3.5 h-3.5 text-[#00C9B7]" />
                   <span>End Time</span>
@@ -363,7 +363,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold text-[#003B45] bg-gradient-to-r from-[#00C9B7] to-[#00E0C6] hover:from-[#00E0C6] hover:to-[#00C9B7] active:scale-[0.98] transition disabled:opacity-50 shadow-md shadow-teal-500/20 focus:outline-none focus:ring-2 focus:ring-[#00E0C6] focus:ring-offset-2"
+                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold text-[#003B45] bg-linear-to-r from-[#00C9B7] to-[#00E0C6] hover:from-[#00E0C6] hover:to-[#00C9B7] active:scale-[0.98] transition disabled:opacity-50 shadow-md shadow-teal-500/20 focus:outline-none focus:ring-2 focus:ring-[#00E0C6] focus:ring-offset-2"
               >
                 {isSubmitting ? (
                   <>

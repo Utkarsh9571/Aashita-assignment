@@ -30,7 +30,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       className="group bg-white rounded-2xl border border-slate-200/90 p-4 sm:p-5 hover:border-[#00C9B7]/50 hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 relative overflow-hidden"
     >
       {/* Subtle left accent highlight on hover */}
-      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[#00C9B7] to-[#003B45] opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-b from-[#00C9B7] to-[#003B45] opacity-0 group-hover:opacity-100 transition-opacity" />
 
       <div className="flex-1 min-w-0">
         <div className="flex flex-wrap items-center gap-2 mb-1.5">

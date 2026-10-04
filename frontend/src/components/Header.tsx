@@ -36,12 +36,12 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="border-b border-[#00C9B7]/20 bg-gradient-to-r from-[#003B45] via-[#042F37] to-[#062F38] text-white sticky top-0 z-30 shadow-md">
+    <header className="border-b border-[#00C9B7]/20 bg-linear-to-r from-[#003B45] via-[#042F37] to-[#062F38] text-white sticky top-0 z-30 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           {/* Aashita Technosoft Branding & Hours */}
           <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00C9B7] to-[#00A89A] flex items-center justify-center text-[#003B45] shadow-md shadow-[#003B45]/50">
+            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-[#00C9B7] to-[#00A89A] flex items-center justify-center text-[#003B45] shadow-md shadow-[#003B45]/50">
               <Building2 className="w-5 h-5 stroke-[2.5]" />
             </div>
             <div>
@@ -86,7 +86,7 @@ export const Header: React.FC<HeaderProps> = ({
                       onDateChange(todayStr);
                     }
                   }}
-                  className="bg-transparent text-xs sm:text-sm font-semibold text-white focus:outline-none cursor-pointer [color-scheme:dark]"
+                  className="bg-transparent text-xs sm:text-sm font-semibold text-white focus:outline-none cursor-pointer scheme-dark"
                   aria-label="Selected date"
                 />
               </div>
@@ -123,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({
               type="button"
               id="new-booking-btn"
               onClick={onOpenBookingModal}
-              className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold text-[#003B45] bg-gradient-to-r from-[#00C9B7] to-[#00E0C6] hover:from-[#00E0C6] hover:to-[#00C9B7] active:scale-[0.98] transition shadow-md shadow-teal-950/40 focus:outline-none focus:ring-2 focus:ring-[#00E0C6] focus:ring-offset-2 focus:ring-offset-[#003B45] ml-auto sm:ml-0"
+              className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-bold text-[#003B45] bg-linear-to-r from-[#00C9B7] to-[#00E0C6] hover:from-[#00E0C6] hover:to-[#00C9B7] active:scale-[0.98] transition shadow-md shadow-teal-950/40 focus:outline-none focus:ring-2 focus:ring-[#00E0C6] focus:ring-offset-2 focus:ring-offset-[#003B45] ml-auto sm:ml-0"
             >
               <Plus className="w-4 h-4 stroke-[2.5]" />
               <span>Book Room</span>

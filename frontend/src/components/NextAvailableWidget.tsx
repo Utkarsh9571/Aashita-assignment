@@ -146,7 +146,7 @@ export const NextAvailableWidget: React.FC<NextAvailableWidgetProps> = ({
         <button
           type="submit"
           disabled={isLoading || !activeRoomId}
-          className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-full text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#003B45] to-[#062F38] hover:from-[#022B32] hover:to-[#04272F] active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+          className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-full text-xs sm:text-sm font-bold text-white bg-linear-to-r from-[#003B45] to-[#062F38] hover:from-[#022B32] hover:to-[#04272F] active:scale-[0.99] transition disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
         >
           {isLoading ? (
             <>
@@ -193,7 +193,7 @@ export const NextAvailableWidget: React.FC<NextAvailableWidgetProps> = ({
                     );
                   }
                 }}
-                className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-full text-xs font-bold text-[#003B45] bg-gradient-to-r from-[#00C9B7] to-[#00E0C6] hover:from-[#00E0C6] hover:to-[#00C9B7] transition shadow-xs"
+                className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 rounded-full text-xs font-bold text-[#003B45] bg-linear-to-r from-[#00C9B7] to-[#00E0C6] hover:from-[#00E0C6] hover:to-[#00C9B7] transition shadow-xs"
               >
                 <span>Book This Slot</span>
                 <ArrowRight className="w-3.5 h-3.5" />

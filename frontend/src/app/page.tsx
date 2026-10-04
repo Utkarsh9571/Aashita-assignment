@@ -312,7 +312,7 @@ export default function DashboardPage() {
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         {/* Aashita Branded Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#003B45] via-[#042A31] to-[#062F38] text-white p-6 sm:p-8 shadow-md border border-[#00C9B7]/25">
+        <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-[#003B45] via-[#042A31] to-[#062F38] text-white p-6 sm:p-8 shadow-md border border-[#00C9B7]/25">
           <div className="relative z-10 max-w-2xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#00C9B7]/15 border border-[#00C9B7]/30 text-[#00E0C6] text-xs font-bold uppercase tracking-wider mb-3">
               <span className="w-1.5 h-1.5 rounded-full bg-[#00E0C6] animate-pulse" />
