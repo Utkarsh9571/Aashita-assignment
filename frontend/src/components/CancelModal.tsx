@@ -111,7 +111,7 @@ export const CancelModal: React.FC<CancelModalProps> = ({
                 type="button"
                 onClick={handleConfirm}
                 disabled={isDeleting}
-                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 active:bg-rose-800 transition disabled:opacity-50 shadow-sm shadow-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 active:scale-[0.98] transition disabled:opacity-50 shadow-sm shadow-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2"
               >
                 {isDeleting ? (
                   <>

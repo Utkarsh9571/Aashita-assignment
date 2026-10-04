@@ -186,7 +186,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3.5 py-2.5 bg-[#F8FCFC] text-slate-800 focus:outline-none focus:ring-2 ${
                   errors.room_id
                     ? 'border-rose-300 focus:ring-rose-500/20'
-                    : 'border-slate-200 focus:ring-[#00C9B7]/30 focus:border-[#00C9B7]'
+                    : 'border-slate-200 focus:ring-[#00C9B7]/40'
                 }`}
               >
                 <option value="">Select a meeting room</option>
@@ -222,10 +222,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   setTitle(e.target.value);
                   if (errors.title) setErrors((prev) => ({ ...prev, title: undefined }));
                 }}
-                className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3.5 py-2.5 bg-white text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 ${
+                className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3.5 py-2.5 bg-white text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 ${
                   errors.title
                     ? 'border-rose-300 focus:ring-rose-500/20'
-                    : 'border-slate-200 focus:ring-[#00C9B7]/30 focus:border-[#00C9B7]'
+                    : 'border-slate-200 focus:ring-[#00C9B7]/40'
                 }`}
               />
               {errors.title && (
@@ -257,7 +257,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                 className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3.5 py-2.5 bg-white text-slate-800 focus:outline-none focus:ring-2 ${
                   errors.booking_date
                     ? 'border-rose-300 focus:ring-rose-500/20'
-                    : 'border-slate-200 focus:ring-[#00C9B7]/30 focus:border-[#00C9B7]'
+                    : 'border-slate-200 focus:ring-[#00C9B7]/40'
                 }`}
               />
               {errors.booking_date && (
@@ -298,7 +298,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3.5 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 ${
                     errors.start_time
                       ? 'border-rose-300 focus:ring-rose-500/20'
-                      : 'border-slate-200 focus:ring-[#00C9B7]/30 focus:border-[#00C9B7]'
+                      : 'border-slate-200 focus:ring-[#00C9B7]/40'
                   }`}
                 />
                 {errors.start_time && (
@@ -333,7 +333,7 @@ export const BookingModal: React.FC<BookingModalProps> = ({
                   className={`w-full text-xs sm:text-sm font-medium rounded-xl border px-3.5 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 ${
                     errors.end_time
                       ? 'border-rose-300 focus:ring-rose-500/20'
-                      : 'border-slate-200 focus:ring-[#00C9B7]/30 focus:border-[#00C9B7]'
+                      : 'border-slate-200 focus:ring-[#00C9B7]/40'
                   }`}
                 />
                 {errors.end_time && (

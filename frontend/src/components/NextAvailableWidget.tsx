@@ -106,7 +106,7 @@ export const NextAvailableWidget: React.FC<NextAvailableWidgetProps> = ({
               setTargetRoomId(e.target.value ? Number(e.target.value) : null);
               setSlotResult(null);
             }}
-            className="w-full text-xs sm:text-sm font-medium rounded-xl border border-slate-200 bg-[#F8FCFC] px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#00C9B7]/30 focus:border-[#00C9B7]"
+            className="w-full text-xs sm:text-sm font-medium rounded-xl border border-slate-200 bg-[#F8FCFC] px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#00C9B7]/40"
           >
             {rooms.map((r) => (
               <option key={r.id} value={r.id}>
